@@ -1,6 +1,7 @@
 ---
 title: mybatis 资料
 tags: mybatis
+date: 2017-02-06 14:00:00 
 ---
 # mybatis 相关资料
 1. 官网资料文档入门 http://www.mybatis.org/mybatis-3/zh/getting-started.html

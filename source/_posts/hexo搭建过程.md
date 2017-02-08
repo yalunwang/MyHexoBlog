@@ -1,5 +1,6 @@
 ---
 title: Hexo搭建过程 
+date: 2017-02-06 14:00:00 
 tags: hexo
 ---
 ## HEXO 环境搭建
