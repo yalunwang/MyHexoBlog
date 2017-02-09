@@ -4,7 +4,7 @@ date: 2017-02-06 14:00:00
 tags: hexo
 ---
 ## HEXO 环境搭建
-我是在centos7.0里部署的hexo
+我是在centos7.0里部署的hexo,在windows里面也是差不多的。
 ### 安装git
   > yum install git
   > git --version
