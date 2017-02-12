@@ -31,6 +31,7 @@ menu:
   tags: /tags
   #commonweal: /404.html
   about: /about
+  doc: /doc
 
 # Enable/Disable menu icons.
 # Icon Mapping:
@@ -180,7 +181,7 @@ links_title: 友情链接
 links:
   codingxiaxw: http://codingxiaxw.cn
   小道博客: http://oyjt.github.io
-
+  nginx中文站: http://www.nginx.cn
 # ---------------------------------------------------------------
 # Misc Theme Settings
 # ---------------------------------------------------------------
