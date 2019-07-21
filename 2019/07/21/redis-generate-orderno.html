@@ -1,0 +1,801 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="redis,lua,分布式,订单号," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="项目描述最近做的一个项目有这么一个需求：需要生成一个唯一的11位的就餐码(类似于订单号的概念)，就餐码的规则是:一共是11位的数字,前面6位是日期比如2019年07月20就是190720,后面五位是随机数且不能是自增的,不然容易让人看出一天的单量。
+解决方案五位随机数不能用随机生成的，不然可能不唯一，所以想到了预生成的方案：采用redis
+随机数生成先生成10000~99999共9万个数(从1万开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="采用redis生成随机且随机的订单号">
+<meta property="og:url" content="http://yoursite.com/2019/07/21/redis-generate-orderno.html">
+<meta property="og:site_name" content="知乐博客">
+<meta property="og:description" content="项目描述最近做的一个项目有这么一个需求：需要生成一个唯一的11位的就餐码(类似于订单号的概念)，就餐码的规则是:一共是11位的数字,前面6位是日期比如2019年07月20就是190720,后面五位是随机数且不能是自增的,不然容易让人看出一天的单量。
+解决方案五位随机数不能用随机生成的，不然可能不唯一，所以想到了预生成的方案：采用redis
+随机数生成先生成10000~99999共9万个数(从1万开">
+<meta property="og:image" content="http://yoursite.com/images/cab6f9d848f49ccebadb6966b1c5eb9.png">
+<meta property="og:image" content="http://yoursite.com/images/feb37c234e36c49e269ce92efe3938b.png">
+<meta property="og:updated_time" content="2019-07-21T10:11:07.822Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="采用redis生成随机且随机的订单号">
+<meta name="twitter:description" content="项目描述最近做的一个项目有这么一个需求：需要生成一个唯一的11位的就餐码(类似于订单号的概念)，就餐码的规则是:一共是11位的数字,前面6位是日期比如2019年07月20就是190720,后面五位是随机数且不能是自增的,不然容易让人看出一天的单量。
+解决方案五位随机数不能用随机生成的，不然可能不唯一，所以想到了预生成的方案：采用redis
+随机数生成先生成10000~99999共9万个数(从1万开">
+<meta name="twitter:image" content="http://yoursite.com/images/cab6f9d848f49ccebadb6966b1c5eb9.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 采用redis生成随机且随机的订单号 | 知乐博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">知乐博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">我的全栈之路，记录我的技术成长</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-doc">
+          <a href="/doc" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            手册
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                采用redis生成随机且随机的订单号
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-07-21T10:20:25+08:00" content="2019-07-21">
+              2019-07-21
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2019/07/21/redis-generate-orderno.html" class="leancloud_visitors" data-flag-title="采用redis生成随机且随机的订单号">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="项目描述"><a href="#项目描述" class="headerlink" title="项目描述"></a>项目描述</h2><p>最近做的一个项目有这么一个需求：需要生成一个唯一的11位的就餐码(类似于订单号的概念)，就餐码的规则是:一共是11位的数字,前面6位是日期比如2019年07月20就是190720,后面五位是随机数且不能是自增的,不然容易让人看出一天的单量。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>五位随机数不能用随机生成的，不然可能不唯一，所以想到了预生成的方案：<br>采用redis</p>
+<h3 id="随机数生成"><a href="#随机数生成" class="headerlink" title="随机数生成"></a>随机数生成</h3><p>先生成10000~99999共9万个数(从1万开始是懒得再前面补0了),然后打乱分别 存入redis的list数据结构 90个key每个key存1000个数。取的时候通过LINDEX进行读取。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">List&lt;String&gt; numList=new ArrayList&lt;&gt;();</div><div class="line">//90万个数 每个redis key 1000个数，要存90个key.</div><div class="line">for (int i=10000;i&lt;=99999;i++)&#123;</div><div class="line">    numList.add(String.valueOf(i));</div><div class="line"></div><div class="line">&#125;</div><div class="line">//打乱顺序</div><div class="line">Collections.shuffle(numList);</div><div class="line">//生成key</div><div class="line">for (int j=10;j&lt;=99;j++)&#123;</div><div class="line">    String redisKey=&quot;qrcode:&quot;+j;</div><div class="line">    List&lt;String&gt; newList= test.subList((j-10)*1000,(j-10)*1000 + 1000);</div><div class="line">   jedisCluster.rpush(redisKey,newList.toArray(new String[newList.size()]));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样每个key的index值就是0~999,key就是qrcode:10/qrcode:11/qrcode:12…/qrcode:99.<br> <a id="more"></a></p>
+<h3 id="计数key"><a href="#计数key" class="headerlink" title="计数key"></a>计数key</h3><p>再使用一个key来计数每次生成一个就餐码就加1，值也从10000开始,计数的前两位用来表示该取哪个key，后三位代表key的索引。比如现在计数记到12151那就是取上面生成的<strong>qrcode:12</strong> key里索引为151的value,然后当计数到99999时再从10000重新计数，这样保证一天有9万个随机数可以使用且不会取到相同的随机数。这样可以解决一天最多9万单数量级的业务,后面一天百万级同理可以扩充成6位7位等。</p>
+<p> 先初始化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">jedisCluster.set(qrcode:incr,9999);</div></pre></td></tr></table></figure></p>
+<p>示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">  public String getOneQrCode() &#123;</div><div class="line">    Long incr = jedisCluster.incr(&quot;qrcode:incr&quot;);</div><div class="line">    //测试环境生成到19999</div><div class="line">    int maxIncr=19999</div><div class="line">    //int maxIncr = 99999;</div><div class="line">    //后期单量过猛时需要考虑--并发风险导致的就餐码重复 todo</div><div class="line">    if (incr == maxIncr) &#123;</div><div class="line">        jedisCluster.set(&quot;qrcode:incr&quot;, String.valueOf(10000));</div><div class="line">       &#125;</div><div class="line">    System.out.println(&quot;incr：&quot;+incr);</div><div class="line">    //取前两位</div><div class="line">    String key = incr.toString().substring(0, 2);</div><div class="line">    //取后三位作为list里的index</div><div class="line">    Integer index = NumberUtil.getIntValue(incr.toString().substring(2));</div><div class="line">    //获得5位随机数</div><div class="line">    String qrcode = jedisCluster.lIndex(&quot;qrcode:&quot;+ key, index);</div><div class="line">    return qrcode;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="并发风险"><a href="#并发风险" class="headerlink" title="并发风险"></a>并发风险</h3><p>当计数到最大值时,需要重置计数key(qrcode:incr)为10000会有线程不安全的问题。<br>我们先编写一个并发方法单元测试一下：<br>测试环境由于只生成10000个随机数,maxincr=19999，所以<br>我们先把计数的key设置成接近maxincr来进行并发测试，设置成19997后获取2个qrcode将进行重置成10000.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">jedisCluster.set(qrcode:incr,19997);</div></pre></td></tr></table></figure></p>
+<p>开启5个线程并发测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">private static final int threadNum=5;</div><div class="line">    //倒计数器，用于模拟高并发</div><div class="line">    private CountDownLatch countDownLatch=new CountDownLatch(threadNum);</div><div class="line">    @Test</div><div class="line">    public void benchmark() &#123;</div><div class="line">        Thread[] threads=new Thread[threadNum];</div><div class="line">        for (int i = 0; i &lt;threadNum ; i++) &#123;</div><div class="line">            final int j=i;</div><div class="line">            Thread thread=new Thread(new Runnable() &#123;</div><div class="line">                @Override</div><div class="line">                public void run() &#123;</div><div class="line">                    try &#123;</div><div class="line">                        countDownLatch.await();</div><div class="line">                    &#125; catch (InterruptedException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    System.out.println(&quot;qrcode&quot;+getOneQrCode());</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            threads[i]=thread;</div><div class="line">            thread.start();</div><div class="line"></div><div class="line">            countDownLatch.countDown();</div><div class="line">        &#125;</div><div class="line">        for (Thread thread :threads) &#123;</div><div class="line">            try &#123;</div><div class="line">                thread.join();</div><div class="line">            &#125; catch (InterruptedException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p><strong>5个线程并发测试的结果：</strong></p>
+<ol>
+<li>对qrcode:incr进行get返回的结果是10000.</li>
+<li>获取的结果为：<br><img src="/images/cab6f9d848f49ccebadb6966b1c5eb9.png" alt=""></li>
+</ol>
+<p>由于并发导致5个线程都先执行到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Long incr = jedisCluster.incr(&quot;qrcode:incr&quot;);</div></pre></td></tr></table></figure>
+<p>最终incr的值分别为19998/19999/20000/20001/20002.所以后面三个计数的key为20，由于测试环境只生成到了qrcode:19,所以返回的是null。</p>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p>所以判断到达maxincr并重置成10000时应该是原子操作。所以这里采用lua脚本的方式执行。</p>
+<p>Redis使用lua脚本<br>版本：自2.6.0起可用。<br>时间复杂度：取决于执行的脚本。</p>
+<p>使用Lua脚本的好处：</p>
+<ul>
+<li>减少网络开销。可以将多个请求通过脚本的形式一次发送，减少网络时延。<br>原子操作。redis会将整个脚本作为一个整体执行，中间不会被其他命令插入。因此在编写脚本的过程中无需担心会出现竞态条件，无需使用事务。</li>
+<li>复用。客户端发送的脚本会永久存在redis中，这样，其他客户端可以复用这一脚本而不需要使用代码完成相同的逻辑。</li>
+<li>redis会将整个脚本作为一个整体执行，中间不会被其他命令插入。因此在编写脚本的过程中无需担心会出现竞态条件，无需使用事务。</li>
+</ul>
+<p>所以对获取qrcode进行改造：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">public String getOneQrcodeLua()&#123;</div><div class="line">        String lua=&quot;local key = KEYS[1]\n&quot; +</div><div class="line">            &quot;local incr=redis.call(&apos;incr&apos;,key) \n&quot;+</div><div class="line">            &quot;if incr == tonumber(ARGV[1]) \n&quot; +</div><div class="line">            &quot;then\n&quot; +</div><div class="line">            &quot;    redis.call(&apos;set&apos;,key,ARGV[2])\n&quot; +</div><div class="line">            &quot;    return incr\n&quot; +</div><div class="line">            &quot;else\n&quot; +</div><div class="line">            &quot;    return incr\n&quot; +</div><div class="line">            &quot;end&quot;;</div><div class="line">        List&lt;String&gt; keys = new ArrayList&lt;&gt;();</div><div class="line">        keys.add(&quot;qrcode:incr&quot;);</div><div class="line">        List&lt;String&gt; argv = new ArrayList&lt;&gt;();</div><div class="line">        argv.add(&quot;19999&quot;);</div><div class="line">        argv.add(&quot;10000&quot;);</div><div class="line">        Object o= jedisCluster.eval(lua,keys,argv);</div><div class="line">       // System.out.println(&quot;incr&quot;+o);</div><div class="line">        //取前两位</div><div class="line">        String key = o.toString().substring(0, 2);</div><div class="line">        //取后三位作为list里的index</div><div class="line">        Integer index = NumberUtil.getIntValue(o.toString().substring(2));</div><div class="line">        //获得5位随机数</div><div class="line">        String qrcode = jedisCluster.lIndex(&quot;qrcode:&quot;+ key, index);</div><div class="line">        return qrcode;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p><strong>5个线程并发测试的结果：</strong></p>
+<ol>
+<li>对qrcode:incr进行get返回的结果是10003.</li>
+<li>获取的结果为：<br><img src="/images/feb37c234e36c49e269ce92efe3938b.png" alt=""></li>
+</ol>
+<p>一切正常。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://redisbook.readthedocs.io/en/latest/feature/scripting.html" target="_blank" rel="external">https://redisbook.readthedocs.io/en/latest/feature/scripting.html</a><br><a href="http://doc.redisfans.com/script/eval.html" target="_blank" rel="external">http://doc.redisfans.com/script/eval.html</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/redis/" rel="tag">#redis</a>
+          
+            <a href="/tags/lua/" rel="tag">#lua</a>
+          
+            <a href="/tags/分布式/" rel="tag">#分布式</a>
+          
+            <a href="/tags/订单号/" rel="tag">#订单号</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/01/dianping-cat.html" rel="next" title="点评cat使用记录">
+                <i class="fa fa-chevron-left"></i> 点评cat使用记录
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/timg.jpg"
+               alt="yalunwang" />
+          <p class="site-author-name" itemprop="name">yalunwang</p>
+          <p class="site-description motion-element" itemprop="description">不忘初心,方得始终。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">17</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yalunwang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2074251525/profile" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://codingxiaxw.cn" title="codingxiaxw" target="_blank">codingxiaxw</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://oyjt.github.io" title="小道博客" target="_blank">小道博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.nginx.cn" title="nginx中文站" target="_blank">nginx中文站</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.weiweiyila.com" title="红萝卜" target="_blank">红萝卜</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://m.kuaidi100.com/" title="快递查询" target="_blank">快递查询</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目描述"><span class="nav-number">1.</span> <span class="nav-text">项目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#随机数生成"><span class="nav-number">2.1.</span> <span class="nav-text">随机数生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计数key"><span class="nav-number">2.2.</span> <span class="nav-text">计数key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发风险"><span class="nav-number">2.3.</span> <span class="nav-text">并发风险</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案-1"><span class="nav-number">2.3.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yalunwang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("M8iRyzY6Gzg1kn55zz62JYez-gzGzoHsz", "anAs9AkMkBJvGPfgI8LhM3lz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>
