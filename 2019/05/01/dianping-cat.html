@@ -1,0 +1,787 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="cat," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="点评cat使用记录cat介绍CAT（Central Application Tracking），是基于 Java 开发的分布式实时监控系统。CAT在基础存储、高性能通信、大规模在线访问、服务治理、实时监控、容器化及集群智能调度等领域提供业界领先的、统一的解决方案。CAT 目前在美团的产品定位是应用层的统一监控组件，基本接入了美团所有核心应用，在中间件（RPC、数据库、缓存、MQ 等）框架中得到广泛">
+<meta property="og:type" content="article">
+<meta property="og:title" content="点评cat使用记录">
+<meta property="og:url" content="http://yoursite.com/2019/05/01/dianping-cat.html">
+<meta property="og:site_name" content="知乐博客">
+<meta property="og:description" content="点评cat使用记录cat介绍CAT（Central Application Tracking），是基于 Java 开发的分布式实时监控系统。CAT在基础存储、高性能通信、大规模在线访问、服务治理、实时监控、容器化及集群智能调度等领域提供业界领先的、统一的解决方案。CAT 目前在美团的产品定位是应用层的统一监控组件，基本接入了美团所有核心应用，在中间件（RPC、数据库、缓存、MQ 等）框架中得到广泛">
+<meta property="og:updated_time" content="2019-05-19T07:57:47.051Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="点评cat使用记录">
+<meta name="twitter:description" content="点评cat使用记录cat介绍CAT（Central Application Tracking），是基于 Java 开发的分布式实时监控系统。CAT在基础存储、高性能通信、大规模在线访问、服务治理、实时监控、容器化及集群智能调度等领域提供业界领先的、统一的解决方案。CAT 目前在美团的产品定位是应用层的统一监控组件，基本接入了美团所有核心应用，在中间件（RPC、数据库、缓存、MQ 等）框架中得到广泛">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 点评cat使用记录 | 知乐博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">知乐博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">我的全栈之路，记录我的技术成长</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-doc">
+          <a href="/doc" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            手册
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                点评cat使用记录
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-05-01T16:23:45+08:00" content="2019-05-01">
+              2019-05-01
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2019/05/01/dianping-cat.html" class="leancloud_visitors" data-flag-title="点评cat使用记录">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="点评cat使用记录"><a href="#点评cat使用记录" class="headerlink" title="点评cat使用记录"></a>点评cat使用记录</h2><h3 id="cat介绍"><a href="#cat介绍" class="headerlink" title="cat介绍"></a>cat介绍</h3><p>CAT（Central Application Tracking），是基于 Java 开发的分布式实时监控系统。CAT在基础存储、高性能通信、大规模在线访问、服务治理、实时监控、容器化及集群智能调度等领域提供业界领先的、统一的解决方案。CAT 目前在美团的产品定位是应用层的统一监控组件，基本接入了美团所有核心应用，在中间件（RPC、数据库、缓存、MQ 等）框架中得到广泛应用，为各业务线提供系统的性能指标、健康状况、实时告警等。</p>
+<h3 id="四大报表"><a href="#四大报表" class="headerlink" title="四大报表"></a>四大报表</h3><ul>
+<li>Transaction 适合记录跨越系统边界的程序访问行为,比如远程调用，数据库调用，也适合执行时间较长的业务逻辑监控，Transaction用来记录一段代码的执行时间和次数</li>
+<li>Event    用来记录一件事发生的次数，比如记录系统异常，它和transaction相比缺少了时间的统计，开销比transaction要小</li>
+<li>Business报表对应着业务指标，比如订单指标。与Transaction、Event、Problem不同，Business更偏向于宏观上的指标，另外三者偏向于微观代码的执行情况。<a id="more"></a>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">场景示例：</div><div class="line"></div><div class="line">1. 我想监测排队取号量。</div><div class="line">2. 我想监测预定订单量。</div><div class="line">3. 我想监测搜索调用次数。</div></pre></td></tr></table></figure>
+<ul>
+<li>problem    Problem记录整个项目在运行过程中出现的问题，包括一些异常、错误、访问较长的行为。Problem报表是由logview存在的特征整合而成，方便用户定位问题。</li>
+</ul>
+<h3 id="项目接入"><a href="#项目接入" class="headerlink" title="项目接入"></a>项目接入</h3><ol>
+<li>各种类型项目接入方法 spring mvc 和 spring boot等类型：<br><a href="https://github.com/dianping/cat/tree/master/integration" target="_blank" rel="external">https://github.com/dianping/cat/tree/master/integration</a><br>Dubbo的项目就会有Type为PigeonService的Transaction,Spring boot的项目是自动有Type为Url的Transaction。可以在一些重要的接口中埋入想要监测的点</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">Transaction t = Cat.newTransaction(&quot;name&quot;, &quot;msg&quot;);</div><div class="line">        try &#123;</div><div class="line">            queryES();</div><div class="line">            Cat.logEvent(&quot;response data size is&quot;, 213);</div><div class="line">            //请求别人的接口</div><div class="line">            business();</div><div class="line">            //记录对应的响应结果</div><div class="line">            t.setStatus(Transaction.SUCCESS);</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            Cat.logError(e);//用log4j记录系统异常，以便在Logview中看到此信息</div><div class="line">            t.setStatus(e);</div><div class="line">        &#125; finally &#123;</div><div class="line">            t.complete();</div><div class="line">        &#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>统计调用次数</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Cat.logMetricForCount(&quot;execut_xx_count&quot;);</div></pre></td></tr></table></figure>
+<ol>
+<li>可以在Business报表对应着业务指标:可以查看到基于分钟级别的次数统计。</li>
+<li>可以设置对应告警以查看基线值。<br>基线： 基线是对业务指标的预测值。</li>
+</ol>
+<p>基线生成算法：<br>最近一个月的4个每周几的数据加权求和平均计算得出，秉着更加信任新数据的原则，cat会基于历史数据做异常点的修正，会把一些明显高于以及低于平均值的点剔除。</p>
+<p>举例：今天是2018-10-25（周四），今天整天基线数据的算法是最近四个周四（2018-10-18，2018-10-11，2018-10-04，2018-09-27）的每个分钟数据的加权求和或平均，权重值依次为1，2，3，4。如：当前时间为19:56分设为value，前四周对应的19:56分数据（由远及近）分别为A,B,C,D，则value = (A+2B+3C+4D) / 10。</p>
+<p>对于刚上线的应用，第一天没有基线，第二天的基线基线是前一天的数据，以此类推。</p>
+<p>如何开启基线：<br>只有配置了基线告警的指标，才会自动计算基线。如需基线功能，请配置基线告警</p>
+<h3 id="调用链"><a href="#调用链" class="headerlink" title="调用链"></a>调用链</h3><p>dubbo项目需要在请求header加入：<br> _catChildMessageId<br> _catRootMessageId<br> _catParentMessageId<br>参考链接： <a href="https://www.cnblogs.com/xing901022/p/6237874.html" target="_blank" rel="external">https://www.cnblogs.com/xing901022/p/6237874.html</a></p>
+<h3 id="CAT会对应用有影响吗？"><a href="#CAT会对应用有影响吗？" class="headerlink" title="CAT会对应用有影响吗？"></a>CAT会对应用有影响吗？</h3><p>CAT 本身故障不应该影响业务正常运转，CAT 挂了，应用不该受影响，只是监控能力暂时减弱</p>
+<h3 id="CAT埋点后可以对我提供哪些帮助"><a href="#CAT埋点后可以对我提供哪些帮助" class="headerlink" title="CAT埋点后可以对我提供哪些帮助"></a>CAT埋点后可以对我提供哪些帮助</h3><ol>
+<li>减少线上问题的发现时间,减少问题故障的定位时间,辅助应用程序的优化工具</li>
+<li>可以很清晰到看到一个项目对应每个接口的响应时间,通过对第三方调用时埋点，当遇到故障时可以很清晰的知道是哪里发生了问题,还可以清晰的看到一些慢方法慢sql的日志。 可以做出相应的优化处理。</li>
+<li>可以设置一些指标的统计而且可以设置基线告警,实时监测核心指标的变化趋势。</li>
+</ol>
+<h3 id="文档资料"><a href="#文档资料" class="headerlink" title="文档资料"></a>文档资料</h3><ol>
+<li>点评cat wiki <a href="https://github.com/dianping/cat/wiki/intro" target="_blank" rel="external">https://github.com/dianping/cat/wiki/intro</a></li>
+<li>看大众点评如何通过实时监控系统CAT打造7*24服务 <a href="https://mp.weixin.qq.com/s/auYHrLrJ_r8JneMiVCgqWQ" target="_blank" rel="external">https://mp.weixin.qq.com/s/auYHrLrJ_r8JneMiVCgqWQ</a></li>
+</ol>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><h4 id="cat功能强大，还有很多知识和用法待探索发现。可以一起学习交流！"><a href="#cat功能强大，还有很多知识和用法待探索发现。可以一起学习交流！" class="headerlink" title="cat功能强大，还有很多知识和用法待探索发现。可以一起学习交流！"></a>cat功能强大，还有很多知识和用法待探索发现。可以一起学习交流！</h4>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/cat/" rel="tag">#cat</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/17/summer-boot-validator.html" rel="next" title="基于spring boot starter 对于api请求参数做出校验的自定义starter">
+                <i class="fa fa-chevron-left"></i> 基于spring boot starter 对于api请求参数做出校验的自定义starter
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/timg.jpg"
+               alt="yalunwang" />
+          <p class="site-author-name" itemprop="name">yalunwang</p>
+          <p class="site-description motion-element" itemprop="description">不忘初心,方得始终。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">16</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yalunwang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2074251525/profile" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://codingxiaxw.cn" title="codingxiaxw" target="_blank">codingxiaxw</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://oyjt.github.io" title="小道博客" target="_blank">小道博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.nginx.cn" title="nginx中文站" target="_blank">nginx中文站</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.weiweiyila.com" title="红萝卜" target="_blank">红萝卜</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://m.kuaidi100.com/" title="快递查询" target="_blank">快递查询</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#点评cat使用记录"><span class="nav-number">1.</span> <span class="nav-text">点评cat使用记录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cat介绍"><span class="nav-number">1.1.</span> <span class="nav-text">cat介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四大报表"><span class="nav-number">1.2.</span> <span class="nav-text">四大报表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#项目接入"><span class="nav-number">1.3.</span> <span class="nav-text">项目接入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调用链"><span class="nav-number">1.4.</span> <span class="nav-text">调用链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CAT会对应用有影响吗？"><span class="nav-number">1.5.</span> <span class="nav-text">CAT会对应用有影响吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CAT埋点后可以对我提供哪些帮助"><span class="nav-number">1.6.</span> <span class="nav-text">CAT埋点后可以对我提供哪些帮助</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文档资料"><span class="nav-number">1.7.</span> <span class="nav-text">文档资料</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后记"><span class="nav-number">1.8.</span> <span class="nav-text">后记</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cat功能强大，还有很多知识和用法待探索发现。可以一起学习交流！"><span class="nav-number">1.8.1.</span> <span class="nav-text">cat功能强大，还有很多知识和用法待探索发现。可以一起学习交流！</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yalunwang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("M8iRyzY6Gzg1kn55zz62JYez-gzGzoHsz", "anAs9AkMkBJvGPfgI8LhM3lz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>

@@ -1,0 +1,858 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="spring," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="概述spring 的核心依赖注入：创建应用对象之间协作关系的行为称为装配（wiring）,他有以下几种方式：
+
+自动装配(结合注解)
+Java中显示的配置
+在xml中显示的配置
+
+这三个方案,选哪一个都是可以的,能用自动配置的就有自动配置,对于一些框架的配置我们不能修改别人的源码,必要的xml显示配置也是必要的,而且我们也可以三个方案同时使用,一些Bean自动装配,一些Bean Java配置,一些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring装配bean">
+<meta property="og:url" content="http://yoursite.com/2017/10/17/spring-wiring-bean.html">
+<meta property="og:site_name" content="知乐博客">
+<meta property="og:description" content="概述spring 的核心依赖注入：创建应用对象之间协作关系的行为称为装配（wiring）,他有以下几种方式：
+
+自动装配(结合注解)
+Java中显示的配置
+在xml中显示的配置
+
+这三个方案,选哪一个都是可以的,能用自动配置的就有自动配置,对于一些框架的配置我们不能修改别人的源码,必要的xml显示配置也是必要的,而且我们也可以三个方案同时使用,一些Bean自动装配,一些Bean Java配置,一些">
+<meta property="og:updated_time" content="2019-05-19T07:58:03.070Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spring装配bean">
+<meta name="twitter:description" content="概述spring 的核心依赖注入：创建应用对象之间协作关系的行为称为装配（wiring）,他有以下几种方式：
+
+自动装配(结合注解)
+Java中显示的配置
+在xml中显示的配置
+
+这三个方案,选哪一个都是可以的,能用自动配置的就有自动配置,对于一些框架的配置我们不能修改别人的源码,必要的xml显示配置也是必要的,而且我们也可以三个方案同时使用,一些Bean自动装配,一些Bean Java配置,一些">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> spring装配bean | 知乐博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">知乐博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">我的全栈之路，记录我的技术成长</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-doc">
+          <a href="/doc" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            手册
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                spring装配bean
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-17T22:24:27+08:00" content="2017-10-17">
+              2017-10-17
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2017/10/17/spring-wiring-bean.html" class="leancloud_visitors" data-flag-title="spring装配bean">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>spring 的核心依赖注入：创建应用对象之间协作关系的行为称为装配（wiring）,他有以下几种方式：</p>
+<ul>
+<li>自动装配(结合注解)</li>
+<li>Java中显示的配置</li>
+<li>在xml中显示的配置</li>
+</ul>
+<p>这三个方案,选哪一个都是可以的,能用自动配置的就有自动配置,对于一些框架的配置我们不能修改别人的源码,必要的xml显示配置也是必要的,而且我们也可以三个方案同时使用,一些Bean自动装配,一些Bean Java配置,一些Bean xml配置。<br>对于显示配置，多少有些不方便还是自动装配最简便，所以我们先讲第一个自动化配置<br><a id="more"></a></p>
+<h3 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h3><p>我们首先新建一个meavn项目,我这里用的是idea,推荐大家使用，超爽的开发工具。<br>添加spring 和 test需要的依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">     &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">     &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">     &lt;version&gt;4.11&lt;/version&gt;</div><div class="line">     &lt;scope&gt;test&lt;/scope&gt;</div><div class="line">   &lt;/dependency&gt;</div><div class="line"></div><div class="line">   &lt;dependency&gt;</div><div class="line">     &lt;groupId&gt;org.springframework&lt;/groupId&gt;</div><div class="line">     &lt;artifactId&gt;spring-context&lt;/artifactId&gt;</div><div class="line">     &lt;version&gt;3.2.0.RELEASE&lt;/version&gt;</div><div class="line">   &lt;/dependency&gt;</div><div class="line">   &lt;dependency&gt;</div><div class="line">     &lt;groupId&gt;org.springframework&lt;/groupId&gt;</div><div class="line">     &lt;artifactId&gt;spring-test&lt;/artifactId&gt;</div><div class="line">     &lt;version&gt;3.2.0.RELEASE&lt;/version&gt;</div><div class="line">   &lt;/dependency&gt;</div><div class="line">   &lt;dependency&gt;</div><div class="line">     &lt;groupId&gt;org.springframework&lt;/groupId&gt;</div><div class="line">     &lt;artifactId&gt;spring-beans&lt;/artifactId&gt;</div><div class="line">     &lt;version&gt;3.2.0.RELEASE&lt;/version&gt;</div><div class="line">     &lt;type&gt;jar&lt;/type&gt;</div><div class="line">   &lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>源码均在github上可以获取,地址会在文末给出,欢迎加Start</p>
+<h3 id="自动化配置"><a href="#自动化配置" class="headerlink" title="自动化配置"></a>自动化配置</h3><h4 id="创建bean"><a href="#创建bean" class="headerlink" title="创建bean"></a>创建bean</h4><p>spring实现自动装配的方式： 通过组建扫描发现应用上下文所创建的bean并通过自动装配创建bean的依赖关系。</p>
+<ol>
+<li>组件扫描 component-scan</li>
+<li>自动装配 Autowire</li>
+</ol>
+<p>在当今社会中,交通工具有多种多样,比如公交车、火车、飞机等。人们可以乘坐不同的司机驾驶的不同交通工具来出行。为了演示spring的实例，我们先建立Car接口:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * author yalunwang</div><div class="line"> * 车抽象接口</div><div class="line"> */</div><div class="line">public interface Car &#123;</div><div class="line">    void notice();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中notice方法代表车到站提醒。这样任意的交通工具都可实现接口Car,代码降低耦合。<br>这里我们先定义一个BusCar(公交车)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * author yalunwang</div><div class="line"> * 公交车</div><div class="line"> */</div><div class="line">@Component</div><div class="line">public class BusCar implements Car &#123;</div><div class="line">    private String carName=&quot;浦东25路&quot;;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void notice() &#123;</div><div class="line">        System.out.println(this.carName+&quot;南京西路到了&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>@Component注解会告诉spring此类需要spring 创建该bean注册到 ioc容器中。因为组件扫描默认是不开启的，所以我们需要开启扫描,这样spring才会去寻找带有@Component的类并创建该bean。spring创建bean的时候都会给定一个ID,BusCar类的ID默认为busCar,会把类名的第一个变为小写。如果想指定ID为bus的可以这样写：@Component(value = “bus”)或@Component(“bus”)。]</p>
+<p>告知spring开启自动扫描有两种办法：</p>
+<ol>
+<li>在xml里配置</li>
+<li>在javaconfig里配置</li>
+</ol>
+<p>首先来看xml：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</div><div class="line">       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;</div><div class="line">       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;</div><div class="line">       &lt;context:component-scan base-package=&quot;com.yalunwang.autowiring&quot;&gt;&lt;/context:component-scan&gt;</div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure></p>
+<p> <context:component-scan>元素就是开启自动扫描，其中的base-package是告诉spring扫描com.yalunwang.autowiring包以及其下的所有子包中带有@Component注解的类,并为之创建。</context:component-scan></p>
+<p> 我们再来看在java配置类里如何配置：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@ComponentScan(basePackages = &quot;com.yalunwang.autowiring&quot;)</div><div class="line">public class PeopleCarConfig &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>@ComponentScan与xml中的 <context:component-scan>起到相同的作用。其中如果不加basePackages ,即表示以此配置类所在的包。</context:component-scan></p>
+<p>我们可以在单元测试里测试一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@RunWith(SpringJUnit4ClassRunner.class)</div><div class="line">@ContextConfiguration(classes = PeopleCarConfig.class)</div><div class="line">public class TestCar &#123;</div><div class="line">    @Autowired</div><div class="line">    private BusCar busCar;</div><div class="line">    @Test</div><div class="line">    public void testCar()</div><div class="line">    &#123;</div><div class="line">        System.out.println(busCar);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果输出： com.yalunwang.autowiring.BusCar@1c3d5104</p>
+<ul>
+<li>@RunWith(SpringJUnit4ClassRunner.class) 会自动创建spring上下文</li>
+<li>@ContextConfiguration 加载配置</li>
+<li>@Autowired 注入同类型的实例</li>
+</ul>
+<p>从结果中我们可以看出BusCar被spring创建。我们的自动扫描成功了。</p>
+<h4 id="自动装配"><a href="#自动装配" class="headerlink" title="自动装配"></a>自动装配</h4><p>自动装配就是让spring自动将bean依赖的其他bean注入进去。我们可以使用@Autowired，在上文中的单元测试中我们刚刚使用了。为了演示自动装配我们再新建一个People接口用来抽象人类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * author yalunwang</div><div class="line"> * 人类抽象接口</div><div class="line"> */</div><div class="line">public interface People &#123;</div><div class="line">    void drive();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>drive代表驾驶。<br>我们再创建一个Man来实现此接口。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * author yalunwang</div><div class="line"> * 男人</div><div class="line"> */</div><div class="line">@Component</div><div class="line">public class Man implements People &#123;</div><div class="line">    private String userName =&quot;小明&quot;;</div><div class="line"></div><div class="line">    public String getUserName() &#123;</div><div class="line">        return userName;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setUserName(String userName) &#123;</div><div class="line">        this.userName = userName;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Autowired</div><div class="line">    private Car car;</div><div class="line"></div><div class="line">    @Override</div><div class="line"></div><div class="line">    public void drive() &#123;</div><div class="line">        //System.out.println(&quot;driver：&quot;);</div><div class="line">        System.out.println(&quot;男司机:&quot; + this.userName);</div><div class="line">        car.notice();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>drive：要想使车可以跑起来我们需要一个司机,司机驾驶车辆，并提醒乘客到达哪一站了。<br>所以我们的Man bean现在依赖于Car bean，这时我们再car字段添加注解@Autowired就会自动将Carbean注入进来。</p>
+<p>这里注入的方式有很多种可以放到构造器,set方法,字段、其他方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">@Autowired</div><div class="line">private Car car;</div><div class="line"></div><div class="line"></div><div class="line">private Car car1;</div><div class="line">//构造器注入</div><div class="line">@Autowired</div><div class="line">public Man(Car car) &#123;</div><div class="line">    this.car1=car;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">private Car car2;</div><div class="line"></div><div class="line">public Car getCar2() &#123;</div><div class="line">    return car2;</div><div class="line">&#125;</div><div class="line">//set方法注入</div><div class="line">@Autowired</div><div class="line">public void setCar2(Car car2) &#123;</div><div class="line">    this.car2 = car2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面我来验证一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@RunWith(SpringJUnit4ClassRunner.class)</div><div class="line">@ContextConfiguration(classes = PeopleCarConfig.class)</div><div class="line">public class TestPeople &#123;</div><div class="line">    @Autowired</div><div class="line">    private People people;</div><div class="line">    @Test</div><div class="line">    public void test() &#123;</div><div class="line">        people.drive();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">男司机:小明</div><div class="line">浦东25路南京西路到了</div></pre></td></tr></table></figure></p>
+<p>这里可以看出我们的自动装配是通过了。自动扫描配置Bean先告一段落。</p>
+<h3 id="Java代码中配置"><a href="#Java代码中配置" class="headerlink" title="Java代码中配置"></a>Java代码中配置</h3><p>javaconfig类需要添加@@Configuration 注解,要在显示的配置bean我们需要使用@Bean注解</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class PeopleCarConfig &#123;</div><div class="line">  </div><div class="line">    @Bean</div><div class="line">    public Car busCar()</div><div class="line">    &#123;</div><div class="line">        return new  BusCar();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>@Bean注解会告诉spring这个方法将返回一个一个对象，并且要注册到spring上下文中。方法体力包含了最终产生bean实例的逻辑。Bean的ID默认是方法的名字，可以通过 @Bean(name=”busCar”)指定自定义的名字。</p>
+<h4 id="装配"><a href="#装配" class="headerlink" title="装配"></a>装配</h4><p>我们知道人需要开车,Man依赖Car,那么我们如何将car注入到man中呢。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@Bean(name=&quot;man&quot;)</div><div class="line">public People man()</div><div class="line">&#123;</div><div class="line">    return new Man( busCar());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这样通过使用一个Car类型的实例对象BusCar的构造器构建Man实例，这里需要注意的是busCar()并非实际的方法调用,因为这个方法上加了@Bean注解,spring会拦截对他的调用并直接返回该方法所创建的bean。<br>我们可以做个实验：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class PeopleCarConfig &#123;</div><div class="line">    private int i=1;</div><div class="line">    @Bean</div><div class="line">    public Car busCar()</div><div class="line">    &#123;</div><div class="line">        i=i+1;</div><div class="line">        System.out.println(i);</div><div class="line">        return new  BusCar();</div><div class="line">    &#125;</div><div class="line">    @Bean(name=&quot;man&quot;)</div><div class="line">    public People man()</div><div class="line">    &#123;</div><div class="line">        return new Man( busCar());</div><div class="line">    &#125;</div><div class="line">    @Bean(name=&quot;woman&quot;)</div><div class="line">    public People woman()</div><div class="line">    &#123;</div><div class="line">        return new Woman( busCar());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">2</div><div class="line">buscar构造函数</div><div class="line">男司机:小明</div><div class="line">浦东25路南京西路到了</div><div class="line">女司机:小红</div><div class="line">浦东25路南京西路到了</div></pre></td></tr></table></figure>
+<p>从这里就可以看出来 busCar()并不会真正的调用,而是直接返回spring创建的bean.<br>我们也可以通过另外一种方法来注入：</p>
+<p>我们再创建一个Woman</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public class Woman implements People &#123;</div><div class="line">    private Car car;</div><div class="line">    public Woman(Car car)&#123;</div><div class="line">        this.car=car;</div><div class="line">    &#125;</div><div class="line">    private String userName =&quot;小红&quot;;</div><div class="line">    @Override</div><div class="line">    public void drive() &#123;</div><div class="line">        System.out.println(&quot;女司机:&quot; + this.userName);</div><div class="line">        car.notice();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public People woman(Car car)</div><div class="line">  &#123;</div><div class="line">      return new Woman( car);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>这里woman()方法加了一个Car参数，这里会自动装配一个Car类型的实现类实例。需要注意的是这里Car类型的bean可以通过xml 自动配置 javaconfig配置来进行配置。所以这种方式是最佳的注入方式。<br>以上我们使用的构造器的方式，其实我们也可以通过set方式等其他任意java方式去创建。</p>
+<h3 id="xml配置"><a href="#xml配置" class="headerlink" title="xml配置"></a>xml配置</h3><p>在javaconfig中配置bean需要加@Configuration，xml配置对应的需要创建一个spring的xml规范文件。取名spring-test.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</div><div class="line">       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;</div><div class="line"></div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure>
+<p>我们来配置一个bean<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;bean class=&quot;com.yalunwang.xmlconfig.BusCar&quot; /&gt;</div></pre></td></tr></table></figure></p>
+<p>这个<bean> 配置相当于javaconfig中的@Bean,这时bean的id默认为完全限定名com.yalunwang.xmlconfig.BusCar#0<br>我们可以指定id: busCar<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=&quot;busCar&quot; class=&quot;com.yalunwang.xmlconfig.BusCar&quot; /&gt;</div></pre></td></tr></table></figure></bean></p>
+<p>这时spring创建busCar 的时候回自动调用busCar的默认构造函数。</p>
+<p>下面我们来看在xml如何里装配</p>
+<h4 id="装配bean"><a href="#装配bean" class="headerlink" title="装配bean"></a>装配bean</h4><ol>
+<li>构造器方式<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=&quot;man&quot; class=&quot;com.yalunwang.xmlconfig.Man&quot; &gt;</div><div class="line">     &lt;constructor-arg ref=&quot;busCar&quot;/&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>这样就会在创建man实例的时候调用有参构造器，将id为busCar的bean实例注入进去。<br>我们也可以注入非引用类型即字面值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> &lt;bean id=&quot;busCar&quot; class=&quot;com.yalunwang.xmlconfig.BusCar&quot; &gt;</div><div class="line">              &lt;constructor-arg name=&quot;carName&quot; value=&quot;浦东2路&quot;&gt;&lt;/constructor-arg&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+<p>xml还支持多种类型的注入,例如list.大家都知道公交车有很多的站点所以我们新增一个字段stationList用来存放站点列表。<br>我们也可以注入list类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=&quot;busCar&quot; class=&quot;com.yalunwang.xmlconfig.BusCar&quot; &gt;</div><div class="line">       &lt;constructor-arg name=&quot;carName&quot; value=&quot;浦东2路&quot;&gt;&lt;/constructor-arg&gt;</div><div class="line">        &lt;constructor-arg name=&quot;stationList&quot;&gt;</div><div class="line">                &lt;list&gt;</div><div class="line">                       &lt;value&gt;高科中路&lt;/value&gt;</div><div class="line">                       &lt;value&gt;宜山路&lt;/value&gt;</div><div class="line">                       &lt;value&gt;桂林路&lt;/value&gt;</div><div class="line">                &lt;/list&gt;</div><div class="line">           &lt;/constructor-arg&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure></p>
+<p>同样的我们也可以使用<set> <map> <array>等来装配。</array></map></set></p>
+<p>我们编写测试类来测试一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">@RunWith(SpringJUnit4ClassRunner.class)</div><div class="line">@ContextConfiguration(locations = &#123;&quot;classpath:spring-test.xml&quot;&#125;)</div><div class="line">public class Test &#123;</div><div class="line">    @Autowired</div><div class="line">    private Car car;</div><div class="line">    @org.junit.Test</div><div class="line">    public void testBusCar()</div><div class="line">    &#123;</div><div class="line">        car.notice();</div><div class="line">        car.printStationList();</div><div class="line">    &#125;</div><div class="line">     @Autowired</div><div class="line">    private People people;</div><div class="line">    @org.junit.Test</div><div class="line">    public void testPeople()</div><div class="line">    &#123;</div><div class="line">        people.drive();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>两个方法的输出分别是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">浦东2路南京西路到了</div><div class="line">站名：高科中路</div><div class="line">站名：宜山路</div><div class="line">站名：桂林路</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">男司机:小明</div><div class="line">浦东2路南京西路到了</div></pre></td></tr></table></figure>
+<p>下面来看属性注入</p>
+<ol>
+<li>属性注入</li>
+</ol>
+<p>属注入是<property>元素</property></p>
+<p>为了演示属性注入我们先把man注释掉,以避免我们再单元测试类中使用@AutoWired注解报错(因为有两个People的实例bean，后面文章会介绍这个问题)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;!--&lt;bean id=&quot;man&quot; class=&quot;com.yalunwang.xmlconfig.Man&quot; &gt;--&gt;</div><div class="line">             &lt;!--&lt;constructor-arg name=&quot;car&quot; ref=&quot;busCar&quot;/&gt;--&gt;</div><div class="line">      &lt;!--&lt;/bean&gt;--&gt;</div><div class="line">      &lt;bean id=&quot;woman&quot; class=&quot;com.yalunwang.xmlconfig.Woman&quot; &gt;</div><div class="line">             &lt;property name=&quot;car&quot; ref=&quot;busCar&quot;&gt;&lt;/property&gt;</div><div class="line">      &lt;/bean&gt;</div></pre></td></tr></table></figure></p>
+<p> 它会引用id为busCar的bean通过setCar()方法注入到car属性中。</p>
+<p> 这时我们在运行testPeople输出<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> 女司机:小红</div><div class="line">浦东2路南京西路到了</div></pre></td></tr></table></figure></p>
+<p> 同样的属性也像构造函数方式注入一样可以注入字面值 <list><set>等类型的值。<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=&quot;woman&quot; class=&quot;com.yalunwang.xmlconfig.Woman&quot; &gt;</div><div class="line">            &lt;property name=&quot;car&quot; ref=&quot;busCar&quot;&gt;&lt;/property&gt;</div><div class="line">            &lt;property name=&quot;userName&quot; value=&quot;韩梅梅&quot;&gt;&lt;/property&gt;</div><div class="line">            &lt;property name=&quot;certificateList&quot; &gt;</div><div class="line">                   &lt;list&gt;</div><div class="line">                          &lt;value&gt;驾驶证&lt;/value&gt;</div><div class="line">                          &lt;value&gt;身份证&lt;/value&gt;</div><div class="line">                   &lt;/list&gt;</div><div class="line">            &lt;/property&gt;</div><div class="line">     &lt;/bean&gt;</div></pre></td></tr></table></figure></set></list></p>
+<p>我们再次测试：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">女司机:韩梅梅</div><div class="line">浦东2路南京西路到了</div><div class="line">证书:驾驶证</div><div class="line">证书:身份证</div></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>  以上就是spring中的三种装配Bean的方式,这里只是将最核心也是最基本的内容展示出来了,关于spring中更高级的装配我们将在后面文章讲解。</p>
+<h3 id="博客中的源码地址"><a href="#博客中的源码地址" class="headerlink" title="博客中的源码地址"></a>博客中的源码地址</h3><p><a href="https://github.com/yalunwang/java-clump/tree/master/springdemo" target="_blank" rel="external">github地址:https://github.com/yalunwang/java-clump</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag">#spring</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/17/jdbc_two.html" rel="next" title="jdbc使用二">
+                <i class="fa fa-chevron-left"></i> jdbc使用二
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/28/java_innerclass.html" rel="prev" title="java 内部类 嵌套类">
+                java 内部类 嵌套类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/timg.jpg"
+               alt="yalunwang" />
+          <p class="site-author-name" itemprop="name">yalunwang</p>
+          <p class="site-description motion-element" itemprop="description">不忘初心,方得始终。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">16</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yalunwang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2074251525/profile" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://codingxiaxw.cn" title="codingxiaxw" target="_blank">codingxiaxw</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://oyjt.github.io" title="小道博客" target="_blank">小道博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.nginx.cn" title="nginx中文站" target="_blank">nginx中文站</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.weiweiyila.com" title="红萝卜" target="_blank">红萝卜</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://m.kuaidi100.com/" title="快递查询" target="_blank">快递查询</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建项目"><span class="nav-number">1.1.</span> <span class="nav-text">创建项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动化配置"><span class="nav-number">1.2.</span> <span class="nav-text">自动化配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建bean"><span class="nav-number">1.2.1.</span> <span class="nav-text">创建bean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动装配"><span class="nav-number">1.2.2.</span> <span class="nav-text">自动装配</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java代码中配置"><span class="nav-number">1.3.</span> <span class="nav-text">Java代码中配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#装配"><span class="nav-number">1.3.1.</span> <span class="nav-text">装配</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#xml配置"><span class="nav-number">1.4.</span> <span class="nav-text">xml配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#装配bean"><span class="nav-number">1.4.1.</span> <span class="nav-text">装配bean</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#博客中的源码地址"><span class="nav-number">1.6.</span> <span class="nav-text">博客中的源码地址</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yalunwang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("M8iRyzY6Gzg1kn55zz62JYez-gzGzoHsz", "anAs9AkMkBJvGPfgI8LhM3lz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>

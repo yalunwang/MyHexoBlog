@@ -1,0 +1,829 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java基础," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="概述java允许我们把一个类a定义在另一个类b里面,那么这个类a就叫做内部类。例如如下面：
+
+如果内部类似Non-static的那么被称作内部类
+123456class OuterClass &amp;#123;    ...    class NestedClass &amp;#123;        ...    &amp;#125;&amp;#125;
+
+如果内部类是static 的那么被称作嵌套类或者内部静态类
+1234">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java 内部类 嵌套类">
+<meta property="og:url" content="http://yoursite.com/2017/11/28/java_innerclass.html">
+<meta property="og:site_name" content="知乐博客">
+<meta property="og:description" content="概述java允许我们把一个类a定义在另一个类b里面,那么这个类a就叫做内部类。例如如下面：
+
+如果内部类似Non-static的那么被称作内部类
+123456class OuterClass &amp;#123;    ...    class NestedClass &amp;#123;        ...    &amp;#125;&amp;#125;
+
+如果内部类是static 的那么被称作嵌套类或者内部静态类
+1234">
+<meta property="og:updated_time" content="2017-11-28T02:45:17.661Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java 内部类 嵌套类">
+<meta name="twitter:description" content="概述java允许我们把一个类a定义在另一个类b里面,那么这个类a就叫做内部类。例如如下面：
+
+如果内部类似Non-static的那么被称作内部类
+123456class OuterClass &amp;#123;    ...    class NestedClass &amp;#123;        ...    &amp;#125;&amp;#125;
+
+如果内部类是static 的那么被称作嵌套类或者内部静态类
+1234">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> java 内部类 嵌套类 | 知乐博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">知乐博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">我的全栈之路，记录我的技术成长</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-doc">
+          <a href="/doc" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            手册
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                java 内部类 嵌套类
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-11-28T10:20:25+08:00" content="2017-11-28">
+              2017-11-28
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2017/11/28/java_innerclass.html" class="leancloud_visitors" data-flag-title="java 内部类 嵌套类">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>java允许我们把一个类a定义在另一个类b里面,那么这个类a就叫做内部类。例如如下面：</p>
+<ul>
+<li><p>如果内部类似Non-static的那么被称作内部类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">class OuterClass &#123;</div><div class="line">    ...</div><div class="line">    class NestedClass &#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>如果内部类是static 的那么被称作嵌套类或者内部静态类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"> class OuterClass &#123;</div><div class="line">    ...</div><div class="line">    static class StaticNestedClass &#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">   </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+  <a id="more"></a>
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><h4 id="普通的内部类"><a href="#普通的内部类" class="headerlink" title="普通的内部类"></a>普通的内部类</h4>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Outer o = new Outer();</div><div class="line">Outer.Inner i = o.new Inner();</div></pre></td></tr></table></figure>
+<ul>
+<li>内部类的对象只能在与其外部类相关联的情况下才能被创建。</li>
+<li>内部类访问外部类实例时可以使用Outer.this,创建内部类实例时使用外部类的实例对象 .new Inner()</li>
+<li>内部类对象隐含地保存了一个指向外部类对象的引用，每一个非静态内部类的实例都链接到一个外部类的实例上<h4 id="静态嵌套类"><a href="#静态嵌套类" class="headerlink" title="静态嵌套类"></a>静态嵌套类</h4></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Outer.Inner i = new Outer.Inner();</div></pre></td></tr></table></figure>
+<ul>
+<li>如果不需要内部类与其外部类对象之间有联系,可以将内部类声明为static.</li>
+<li>不能访问非静态的外围成员<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4></li>
+<li>如果一个类要被声明为static的，只有一种情况，就是静态内部类。</li>
+<li>静态内部类跟静态方法一样，只能访问静态的成员变量和方法，不能访问非静态的方法和属性，但是普通内部类可以访问任意外部类的成员变量和方法</li>
+<li><p>静态内部类可以声明普通成员变量和方法以及static成员变量和方法，而普通内部类不能声明static成员变量和方法。</p>
+<h3 id="为什么需要内部类"><a href="#为什么需要内部类" class="headerlink" title="为什么需要内部类"></a>为什么需要内部类</h3><h4 id="内部类的使用场景"><a href="#内部类的使用场景" class="headerlink" title="内部类的使用场景"></a>内部类的使用场景</h4><p>我们来看一个例子：</p>
+<h5 id="先定义一个抽象类"><a href="#先定义一个抽象类" class="headerlink" title="先定义一个抽象类"></a>先定义一个抽象类</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">  /**</div><div class="line"> * Selector迭代器</div><div class="line"> */</div><div class="line">public abstract class Selector&lt;T&gt; &#123;</div><div class="line">    public  void ff()&#123;</div><div class="line">        System.out.println(this.getClass().getName());</div><div class="line">    &#125;</div><div class="line">    abstract boolean hasNext();</div><div class="line">    abstract T next();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再定义一个Sequence类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"> /**</div><div class="line"> * 用类包装一个Integer的数组,并实现添加 通过继承Selector迭代遍历</div><div class="line"> */</div><div class="line">public class Sequence  extends Selector&lt;Integer&gt;&#123;</div><div class="line">    private Object  [] items;</div><div class="line">    private int next =0;</div><div class="line"></div><div class="line">    public Sequence(int size)&#123;</div><div class="line">        items=new Object[size];</div><div class="line">    &#125;</div><div class="line">    public void add(int x)&#123;</div><div class="line">        if(next &lt;items.length)&#123;</div><div class="line">            items[next]=x;</div><div class="line">            next++;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /************************************实现抽象类*/</div><div class="line"></div><div class="line">    private  int index=0;</div><div class="line">    @Override</div><div class="line">    boolean hasNext() &#123;</div><div class="line">        return !(index==items.length);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    Integer next() &#123;</div><div class="line">        Integer value=null;</div><div class="line">        if( hasNext())&#123;</div><div class="line">            value=Integer.parseInt(items[index].toString()) ;</div><div class="line">            index++;</div><div class="line">        &#125;</div><div class="line">        return value;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们定义一个Sequence类来包装了一个Object的数组,里面封装了添加初始化操作,通过继承了Selector<t>  来实现了迭代遍历功能。<br>这时如果我们需要Sequence再继承其他类怎么办？比如现在有一个类SequenceBiz</t></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">  /**</div><div class="line"> * Sequence需要继承的业务</div><div class="line"> */</div><div class="line">public class SequenceBiz &#123;</div><div class="line">    public void log()</div><div class="line">    &#123;</div><div class="line">        //dosomestring 一些需要Sequence继承的业务</div><div class="line">        System.out.println(this.getClass().getName()+&quot;我记录了日志&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个时候可以使用内部类来解决</p>
+<h5 id="使用内部类"><a href="#使用内部类" class="headerlink" title="使用内部类"></a>使用内部类</h5> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">  /**</div><div class="line"> * 用类包装一个Object的数组,并使用内部类通过继承Selector迭代遍历</div><div class="line"> * 继承SequenceBiz 来处理其他业务</div><div class="line"> */</div><div class="line">public class Sequence1 extends SequenceBiz&#123;</div><div class="line">    private Object  [] items;</div><div class="line">    private int next =0;</div><div class="line"></div><div class="line">    public Sequence1(int size)&#123;</div><div class="line">        items=new Object[size];</div><div class="line">    &#125;</div><div class="line">    public void add(int x)&#123;</div><div class="line">        if(next &lt;items.length)&#123;</div><div class="line">            items[next]=x;</div><div class="line">            next++;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    private class SequenceSelector extends Selector&lt;Integer&gt;&#123;</div><div class="line">        private  int index=0;</div><div class="line">        @Override</div><div class="line">        public boolean hasNext() &#123;</div><div class="line">            return !(index==items.length);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public Integer next() &#123;</div><div class="line">            Integer value=null;</div><div class="line">            if( hasNext())&#123;</div><div class="line">                value=Integer.parseInt(items[index].toString()) ;</div><div class="line">                index++;</div><div class="line">            &#125;</div><div class="line">            return value;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 返回迭代器</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public  Selector getSelector()</div><div class="line">    &#123;</div><div class="line">        return new SequenceSelector();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 我们来测试一下</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">   public class TestInnerClass &#123;</div><div class="line">    public static  void main(String[] args)</div><div class="line">    &#123;</div><div class="line">//        Sequence sequence=new Sequence(5);</div><div class="line">//        for (int i=0;i&lt;5;i++)&#123;</div><div class="line">//            sequence.add(i);</div><div class="line">//        &#125;</div><div class="line">//        while (sequence.hasNext())&#123;</div><div class="line">//            System.out.println(sequence.next());</div><div class="line">//        &#125;</div><div class="line">        Sequence1 sequence1=new Sequence1(5);</div><div class="line">        for (int i=0;i&lt;5;i++)&#123;</div><div class="line">            sequence1.add(i);</div><div class="line">        &#125;</div><div class="line">        Selector selector=sequence1.getSelector();</div><div class="line">        while (selector.hasNext())&#123;</div><div class="line">            System.out.println(selector.next());</div><div class="line">        &#125;</div><div class="line">        sequence1.log();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="我们来看内部类的好处："><a href="#我们来看内部类的好处：" class="headerlink" title="我们来看内部类的好处："></a>我们来看内部类的好处：</h5><ul>
+<li>使用内部类解决了java中不能继承多个类的问题</li>
+<li>Sequence1创建的private内部类来实现Selector 隐藏了Selector的具体实现。(jdk源码中ArrayList的迭代器就是这种方法)</li>
+<li>嵌套小类会使代码更靠近使用位置,使代码更加利于维护、<h4 id="静态内部类的场景"><a href="#静态内部类的场景" class="headerlink" title="静态内部类的场景"></a>静态内部类的场景</h4></li>
+</ul>
+<h5 id="普通类中创建一个静态类"><a href="#普通类中创建一个静态类" class="headerlink" title="普通类中创建一个静态类"></a>普通类中创建一个静态类</h5> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">    public class Outer &#123;  </div><div class="line">    private String name;  </div><div class="line">    private int age;  </div><div class="line">  </div><div class="line">    public static class Builder &#123;  </div><div class="line">        private String name;  </div><div class="line">        private int age;  </div><div class="line">  </div><div class="line">        public Builder(int age) &#123;  </div><div class="line">            this.age = age;  </div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">        public Builder withName(String name) &#123;  </div><div class="line">            this.name = name;  </div><div class="line">            return this;  </div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">        public Builder withAge(int age) &#123;  </div><div class="line">            this.age = age;  </div><div class="line">            return this;  </div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">        public Outer build() &#123;  </div><div class="line">            return new Outer(this);  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    private Outer(Builder b) &#123;  </div><div class="line">        this.age = b.age;  </div><div class="line">        this.name = b.name;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>静态内部类调用外部类的构造函数，来构造外部类，由于静态内部类可以被单独初始化说有在外部就有以下实现。即Builder design pattern（生成器设计模式）<br>我们可以在main中使用<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">调用  Outer outer = new Outer.Builder(2).withName(&quot;Yang Liu&quot;).build();</div></pre></td></tr></table></figure></p>
+<h5 id="接口中的内部类"><a href="#接口中的内部类" class="headerlink" title="接口中的内部类"></a>接口中的内部类</h5><p>   在接口中我们定义的内部类只能是静态内部类。关于使用场景可以参考shiro框架中Subject接口。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">*生成器设计模式实现用于以简化的方式创建实例</div><div class="line">Builder design pattern implementation for creating &#123;@link Subject&#125; instances in a simplified way without requiring knowledge of Shiro&apos;s construction techniques.</div><div class="line">*</div><div class="line">/</div><div class="line">public interface Subject &#123;</div><div class="line">     public static class Builder &#123;</div><div class="line">         </div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>关于这个设计模式可以参考 </p>
+<pre><code>- https://www.cnblogs.com/zhuyuliang/p/5212746.html
+- [Builder Design Pattern](https://dev.to/nishparadox/builder-design-pattern?utm_source=tuicool&amp;utm_medium=referral)
+</code></pre><h5 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h5><pre><code>- 如果类的构造器或者静态工厂中有多个参数，设计这样类时，最好使用builder模式，特别是大多数参数都是可选的时候。
+- 如果现在不能确定参数的个数，使用构造器即builder模式。
+- 静态内部类提高了封装性，和代码的可读性。 
+</code></pre><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ul>
+<li>使用内部类解决了多继承的问题</li>
+<li>方便将存在一定逻辑关系的类组织在一起，又可以对外界隐藏。</li>
+<li>使代码更靠近使用位置,使代码更加利于维护<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html" target="_blank" rel="external">https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html</a></li>
+<li><a href="https://www.cnblogs.com/chenssy/p/3388487.html" target="_blank" rel="external">https://www.cnblogs.com/chenssy/p/3388487.html</a></li>
+<li><a href="https://www.cnblogs.com/dolphin0520/p/3811445.html" target="_blank" rel="external">https://www.cnblogs.com/dolphin0520/p/3811445.html</a></li>
+<li><a href="http://blog.csdn.net/hivon/article/details/606312" target="_blank" rel="external">http://blog.csdn.net/hivon/article/details/606312</a><h3 id="博客中的源码地址"><a href="#博客中的源码地址" class="headerlink" title="博客中的源码地址"></a>博客中的源码地址</h3><a href="https://github.com/yalunwang/java-clump/tree/master/javasedemo/src/com/yalunwang/innerclass" target="_blank" rel="external">github地址:https://github.com/yalunwang/java-clump</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java基础/" rel="tag">#java基础</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/17/spring-wiring-bean.html" rel="next" title="spring装配bean">
+                <i class="fa fa-chevron-left"></i> spring装配bean
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/17/summer-boot-validator.html" rel="prev" title="基于spring boot starter 对于api请求参数做出校验的自定义starter">
+                基于spring boot starter 对于api请求参数做出校验的自定义starter <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/timg.jpg"
+               alt="yalunwang" />
+          <p class="site-author-name" itemprop="name">yalunwang</p>
+          <p class="site-description motion-element" itemprop="description">不忘初心,方得始终。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">16</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yalunwang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2074251525/profile" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://codingxiaxw.cn" title="codingxiaxw" target="_blank">codingxiaxw</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://oyjt.github.io" title="小道博客" target="_blank">小道博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.nginx.cn" title="nginx中文站" target="_blank">nginx中文站</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.weiweiyila.com" title="红萝卜" target="_blank">红萝卜</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://m.kuaidi100.com/" title="快递查询" target="_blank">快递查询</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方法"><span class="nav-number">2.</span> <span class="nav-text">使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#普通的内部类"><span class="nav-number">2.1.</span> <span class="nav-text">普通的内部类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态嵌套类"><span class="nav-number">2.2.</span> <span class="nav-text">静态嵌套类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注意"><span class="nav-number">2.3.</span> <span class="nav-text">注意</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么需要内部类"><span class="nav-number">3.</span> <span class="nav-text">为什么需要内部类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部类的使用场景"><span class="nav-number">3.1.</span> <span class="nav-text">内部类的使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#先定义一个抽象类"><span class="nav-number">3.1.1.</span> <span class="nav-text">先定义一个抽象类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用内部类"><span class="nav-number">3.1.2.</span> <span class="nav-text">使用内部类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#我们来看内部类的好处："><span class="nav-number">3.1.3.</span> <span class="nav-text">我们来看内部类的好处：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态内部类的场景"><span class="nav-number">3.2.</span> <span class="nav-text">静态内部类的场景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#普通类中创建一个静态类"><span class="nav-number">3.2.1.</span> <span class="nav-text">普通类中创建一个静态类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#接口中的内部类"><span class="nav-number">3.2.2.</span> <span class="nav-text">接口中的内部类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#说明"><span class="nav-number">3.2.3.</span> <span class="nav-text">说明</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">3.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#博客中的源码地址"><span class="nav-number">5.</span> <span class="nav-text">博客中的源码地址</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yalunwang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("M8iRyzY6Gzg1kn55zz62JYez-gzGzoHsz", "anAs9AkMkBJvGPfgI8LhM3lz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>
