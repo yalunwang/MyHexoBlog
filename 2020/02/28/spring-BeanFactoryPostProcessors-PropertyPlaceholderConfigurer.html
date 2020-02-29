@@ -1,0 +1,824 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="sprig源码分析," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="BeanFactoryPostProcessors介绍BeanFactoryPostProcessors完整定义:
+12345678910111213141516171819/** * Allows for custom modification of an application context&amp;apos;s bean definitions, * adapting the bean prope">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring源码分析-BeanFactoryPostProcessors 应用之 PropertyPlaceholderConfigurer">
+<meta property="og:url" content="http://yoursite.com/2020/02/28/spring-BeanFactoryPostProcessors-PropertyPlaceholderConfigurer.html">
+<meta property="og:site_name" content="知乐博客">
+<meta property="og:description" content="BeanFactoryPostProcessors介绍BeanFactoryPostProcessors完整定义:
+12345678910111213141516171819/** * Allows for custom modification of an application context&amp;apos;s bean definitions, * adapting the bean prope">
+<meta property="og:image" content="https://img2018.cnblogs.com/blog/681140/202002/681140-20200228194615681-1128965001.png">
+<meta property="og:updated_time" content="2020-02-29T04:02:44.003Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring源码分析-BeanFactoryPostProcessors 应用之 PropertyPlaceholderConfigurer">
+<meta name="twitter:description" content="BeanFactoryPostProcessors介绍BeanFactoryPostProcessors完整定义:
+12345678910111213141516171819/** * Allows for custom modification of an application context&amp;apos;s bean definitions, * adapting the bean prope">
+<meta name="twitter:image" content="https://img2018.cnblogs.com/blog/681140/202002/681140-20200228194615681-1128965001.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Spring源码分析-BeanFactoryPostProcessors 应用之 PropertyPlaceholderConfigurer | 知乐博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">知乐博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">我的全栈之路，记录我的技术成长</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-doc">
+          <a href="/doc" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            手册
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spring源码分析-BeanFactoryPostProcessors 应用之 PropertyPlaceholderConfigurer
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-02-28T14:04:41+08:00" content="2020-02-28">
+              2020-02-28
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2020/02/28/spring-BeanFactoryPostProcessors-PropertyPlaceholderConfigurer.html" class="leancloud_visitors" data-flag-title="Spring源码分析-BeanFactoryPostProcessors 应用之 PropertyPlaceholderConfigurer">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="BeanFactoryPostProcessors"><a href="#BeanFactoryPostProcessors" class="headerlink" title="BeanFactoryPostProcessors"></a>BeanFactoryPostProcessors</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>BeanFactoryPostProcessors完整定义:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Allows for custom modification of an application context&apos;s bean definitions,</div><div class="line"> * adapting the bean property values of the context&apos;s underlying bean factory.</div><div class="line"> * @see BeanPostProcessor</div><div class="line"> * @see PropertyResourceConfigurer</div><div class="line"> */</div><div class="line">public interface BeanFactoryPostProcessor &#123;</div><div class="line"></div><div class="line">	/**</div><div class="line">	 * Modify the application context&apos;s internal bean factory after its standard</div><div class="line">	 * initialization. All bean definitions will have been loaded, but no beans</div><div class="line">	 * will have been instantiated yet. This allows for overriding or adding</div><div class="line">	 * properties even to eager-initializing beans.</div><div class="line">	 * @param beanFactory the bean factory used by the application context</div><div class="line">	 * @throws org.springframework.beans.BeansException in case of errors</div><div class="line">	 */</div><div class="line">	void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们知道spring最大优点就是其可扩展性,BeanFactoryPostProcessor接口就是spring中提供给我们用于扩展的一个地方。我们看该接口上的javadoc其实非常的详细,这也是我们看spring源码的一个技巧，就是看一个类是干嘛的一定要先通读其注释。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">结合接口上的注释大致描述下BeanFactoryPostProcessor：</div><div class="line">允许用户通过修改applicationContext 中的bean定义(就是xml中定义的bean的信息即:BeanDefinition是和xml有一对一的配置，比如是否是单利，以及propert 属性的赋值等)</div><div class="line">来调整applicationContext中bean工厂中bean属性值。</div><div class="line"></div><div class="line">也就是说执行到BeanFactoryPostProcessor时全部的BeanDefinition定义已经加载好了但是bean实例还没有被创建,我们可以修补或者覆盖bean属性值。</div></pre></td></tr></table></figure>
+ <a id="more"></a>
+<p>我们可以看一下ApplicationContext中BeanFactoryPostProcessor的调用位置来印证是否如此</p>
+<p>下面是ApplicationContext核心代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">public void refresh() throws BeansException, IllegalStateException &#123;</div><div class="line">		synchronized (this.startupShutdownMonitor) &#123;</div><div class="line">			// Prepare this context for refreshing.</div><div class="line">			prepareRefresh();</div><div class="line"></div><div class="line">			</div><div class="line">			//获取beanFactory实例</div><div class="line">			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();</div><div class="line"></div><div class="line">		</div><div class="line">	     	prepareBeanFactory(beanFactory);</div><div class="line"></div><div class="line">			try &#123;</div><div class="line">			 </div><div class="line">				postProcessBeanFactory(beanFactory);</div><div class="line"></div><div class="line">				//这里正是我们的BeanFactoryPostProcessor执行的位置</div><div class="line">				invokeBeanFactoryPostProcessors(beanFactory);</div><div class="line"></div><div class="line">				// Register bean processors that intercept bean creation.</div><div class="line">				registerBeanPostProcessors(beanFactory);</div><div class="line"></div><div class="line">				// Initialize message source for this context.</div><div class="line">				initMessageSource();</div><div class="line"></div><div class="line">				// Initialize event multicaster for this context.</div><div class="line">				initApplicationEventMulticaster();</div><div class="line"></div><div class="line">				// Initialize other special beans in specific context subclasses.</div><div class="line">				onRefresh();</div><div class="line"></div><div class="line">				// Check for listener beans and register them.</div><div class="line">				registerListeners();</div><div class="line"></div><div class="line">				// Instantiate all remaining (non-lazy-init) singletons.</div><div class="line">				//创建非懒加载的所有单例  这里是真正创建bean实例的地方</div><div class="line">				finishBeanFactoryInitialization(beanFactory);</div><div class="line"></div><div class="line">				// Last step: publish corresponding event.</div><div class="line">				finishRefresh();</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			catch (BeansException ex) &#123;</div><div class="line">				// Destroy already created singletons to avoid dangling resources.</div><div class="line">				destroyBeans();</div><div class="line"></div><div class="line">				// Reset &apos;active&apos; flag.</div><div class="line">				cancelRefresh(ex);</div><div class="line"></div><div class="line">				// Propagate exception to caller.</div><div class="line">				throw ex;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>  经过<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> 	ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();</div><div class="line"></div><div class="line">// Prepare the bean factory for use in this context.</div><div class="line">prepareBeanFactory(beanFactory);</div></pre></td></tr></table></figure></p>
+<p>这两步我们已经拿到了beanFactory实例,也就是每一个bean对应的BeanDefinition已经加载好了。下面才是执行invokeBeanFactoryPostProcessors(beanFactory)，也就印证了我们上面的结论。<br><strong>下面我们通过一个BeanFactoryPostProcessor的典型应用PropertyPlaceholderConfigurer来详细讲解BeanFactoryPostProcessor执行原理</strong></p>
+<h2 id="PropertyPlaceholderConfigurer"><a href="#PropertyPlaceholderConfigurer" class="headerlink" title="PropertyPlaceholderConfigurer"></a>PropertyPlaceholderConfigurer</h2><h3 id="简单使用的例子"><a href="#简单使用的例子" class="headerlink" title="简单使用的例子"></a>简单使用的例子</h3><p>PropertyPlaceholderConfigurer相信大家都使用过,我们在配置bean的属性可以使用占位符来赋值，然后通过调整properties文件中对应的属性值来修改。看一个使用PropertyPlaceholderConfigurer简单的例子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">public class Student &#123;</div><div class="line"></div><div class="line">    private String name;</div><div class="line"></div><div class="line">    private Integer age;</div><div class="line"></div><div class="line">    public String getName() &#123;</div><div class="line">        return name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setName(String name) &#123;</div><div class="line">        this.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Integer getAge() &#123;</div><div class="line">        return age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setAge(Integer age) &#123;</div><div class="line">        this.age = age;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">&lt;bean class=&quot;com.yalunwang.Student&quot; id=&quot;student&quot;&gt;</div><div class="line">    &lt;property name=&quot;name&quot; value=&quot;$&#123;student.name&#125;&quot;&gt;&lt;/property&gt;</div><div class="line">    &lt;property name=&quot;age&quot; value=&quot;$&#123;student.age&#125;&quot;&gt;&lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;bean class=&quot;org.springframework.beans.factory.config.PropertyPlaceholderConfigurer&quot;&gt;</div><div class="line">    &lt;property name=&quot;location&quot; value=&quot;classpath:bean.properties&quot;&gt;&lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure></p>
+<p>bean.properties配置文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">student.name=anan</div><div class="line">student.age=2</div></pre></td></tr></table></figure></p>
+<p>单元测试:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">public void test_ioc_app()&#123;</div><div class="line">    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;spring-ioc.xml&quot;);</div><div class="line"></div><div class="line">    Student student =(Student) ac.getBean(&quot;student&quot;);</div><div class="line"></div><div class="line">    System.out.println(&quot;name: &quot;+student.getName());</div><div class="line">    System.out.println(&quot;age: &quot;+student.getAge());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出结果一切正常:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">name: anan</div><div class="line">age: 2</div></pre></td></tr></table></figure>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>先看一下PropertyPlaceholderConfigurer的类继承图:<br><img src="https://img2018.cnblogs.com/blog/681140/202002/681140-20200228194615681-1128965001.png" alt=""></p>
+<p>可以看到PropertyPlaceholderConfigurer实现了BeanFactoryPostProcessor和 PriorityOrdered。</p>
+<p>我们接着对上面的 invokeBeanFactoryPostProcessors(beanFactory)继续进行分析:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Instantiate and invoke all registered BeanFactoryPostProcessor beans,</div><div class="line"> * respecting explicit order if given.</div><div class="line"> * 实例化并调用所有已注册的BeanFactoryPostProcessor Bean，</div><div class="line"> * 如果继承了Order接口按顺序执行</div><div class="line"> * &lt;p&gt;Must be called before singleton instantiation.</div><div class="line"> */</div><div class="line">protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) &#123;</div><div class="line">	// Invoke BeanDefinitionRegistryPostProcessors first, if any.</div><div class="line">	Set&lt;String&gt; processedBeans = new HashSet&lt;String&gt;();</div><div class="line">	//如果是beanFactory实现了BeanDefinitionRegistry</div><div class="line">	if (beanFactory instanceof BeanDefinitionRegistry) &#123;</div><div class="line">		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;</div><div class="line">		List&lt;BeanFactoryPostProcessor&gt; regularPostProcessors = new LinkedList&lt;BeanFactoryPostProcessor&gt;();</div><div class="line">		List&lt;BeanDefinitionRegistryPostProcessor&gt; registryPostProcessors =</div><div class="line">				new LinkedList&lt;BeanDefinitionRegistryPostProcessor&gt;();</div><div class="line">	    //遍历硬编码设置的beanFactory后置处理器			</div><div class="line">		for (BeanFactoryPostProcessor postProcessor : getBeanFactoryPostProcessors()) &#123;</div><div class="line">		    //如果是BeanDefinitionRegistryPostProcessor类型先执行postProcessBeanDefinitionRegistry方法</div><div class="line">			//再将其添加到registryPostProcessors集合中进行后续postProcessBeanFactory方法的执行</div><div class="line">			if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) &#123;</div><div class="line">				BeanDefinitionRegistryPostProcessor registryPostProcessor =</div><div class="line">						(BeanDefinitionRegistryPostProcessor) postProcessor;</div><div class="line">				registryPostProcessor.postProcessBeanDefinitionRegistry(registry);</div><div class="line">				registryPostProcessors.add(registryPostProcessor);</div><div class="line">			&#125;</div><div class="line">			else &#123;</div><div class="line">			    //同理将正常的beanFactory后置处理器添加到regularPostProcessors集合中</div><div class="line">				//进行后续postProcessBeanFactory方法的执行</div><div class="line">				regularPostProcessors.add(postProcessor);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		//找出配置的BeanDefinitionRegistryPostProcessor后置处理器	</div><div class="line">		Map&lt;String, BeanDefinitionRegistryPostProcessor&gt; beanMap =</div><div class="line">				beanFactory.getBeansOfType(BeanDefinitionRegistryPostProcessor.class, true, false);</div><div class="line">		List&lt;BeanDefinitionRegistryPostProcessor&gt; registryPostProcessorBeans =</div><div class="line">				new ArrayList&lt;BeanDefinitionRegistryPostProcessor&gt;(beanMap.values());</div><div class="line">		OrderComparator.sort(registryPostProcessorBeans);</div><div class="line">		//执行BeanDefinitionRegistryPostProcessor后置处理器的postProcessBeanDefinitionRegistry方法</div><div class="line">		for (BeanDefinitionRegistryPostProcessor postProcessor : registryPostProcessorBeans) &#123;</div><div class="line">			postProcessor.postProcessBeanDefinitionRegistry(registry);</div><div class="line">		&#125;</div><div class="line">		//执行上面添加的beanFactory后置处理器的集合里的方法</div><div class="line">		invokeBeanFactoryPostProcessors(registryPostProcessors, beanFactory);</div><div class="line">		invokeBeanFactoryPostProcessors(registryPostProcessorBeans, beanFactory);</div><div class="line">		invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);</div><div class="line">		//处理后的添加到集合里 防止后面重复执行</div><div class="line">		processedBeans.addAll(beanMap.keySet());</div><div class="line">	&#125;</div><div class="line">	else &#123;</div><div class="line">		// Invoke factory processors registered with the context instance.</div><div class="line">		invokeBeanFactoryPostProcessors(getBeanFactoryPostProcessors(), beanFactory);</div><div class="line">	&#125;</div><div class="line"></div><div class="line"></div><div class="line">	//获取配置的BeanFactoryPostProcessor</div><div class="line">	//以下按实现了 PriorityOrdered  Ordered 没有继承 三种进行优先级排序执行 </div><div class="line">	String[] postProcessorNames =</div><div class="line">			beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class, true, false);</div><div class="line">    </div><div class="line"> 	List&lt;BeanFactoryPostProcessor&gt; priorityOrderedPostProcessors = new ArrayList&lt;BeanFactoryPostProcessor&gt;();</div><div class="line">	List&lt;String&gt; orderedPostProcessorNames = new ArrayList&lt;String&gt;();</div><div class="line">	List&lt;String&gt; nonOrderedPostProcessorNames = new ArrayList&lt;String&gt;();</div><div class="line">	for (String ppName : postProcessorNames) &#123;</div><div class="line">	    //这个就是上面记录的如果已经处理了配置的BeanFactoryPostProcessors就跳过</div><div class="line">		if (processedBeans.contains(ppName)) &#123;</div><div class="line">			// skip - already processed in first phase above</div><div class="line">		&#125;</div><div class="line">		else if (isTypeMatch(ppName, PriorityOrdered.class)) &#123;</div><div class="line">			priorityOrderedPostProcessors.add(beanFactory.getBean(ppName, BeanFactoryPostProcessor.class));</div><div class="line">		&#125;</div><div class="line">		else if (isTypeMatch(ppName, Ordered.class)) &#123;</div><div class="line">			orderedPostProcessorNames.add(ppName);</div><div class="line">		&#125;</div><div class="line">		else &#123;</div><div class="line">			nonOrderedPostProcessorNames.add(ppName);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.</div><div class="line">	OrderComparator.sort(priorityOrderedPostProcessors);</div><div class="line">	//上面我们说了PropertyPlaceholderConfigurer 实现了BeanFactoryPostProcessor和 PriorityOrdered,所以会在这一步执行调用</div><div class="line">	invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);</div><div class="line"></div><div class="line">	// Next, invoke the BeanFactoryPostProcessors that implement Ordered.</div><div class="line">	List&lt;BeanFactoryPostProcessor&gt; orderedPostProcessors = new ArrayList&lt;BeanFactoryPostProcessor&gt;();</div><div class="line">	for (String postProcessorName : orderedPostProcessorNames) &#123;</div><div class="line">		orderedPostProcessors.add(getBean(postProcessorName, BeanFactoryPostProcessor.class));</div><div class="line">	&#125;</div><div class="line">	OrderComparator.sort(orderedPostProcessors);</div><div class="line">	invokeBeanFactoryPostProcessors(orderedPostProcessors, beanFactory);</div><div class="line"></div><div class="line">	// Finally, invoke all other BeanFactoryPostProcessors.</div><div class="line">	List&lt;BeanFactoryPostProcessor&gt; nonOrderedPostProcessors = new ArrayList&lt;BeanFactoryPostProcessor&gt;();</div><div class="line">	for (String postProcessorName : nonOrderedPostProcessorNames) &#123;</div><div class="line">		nonOrderedPostProcessors.add(getBean(postProcessorName, BeanFactoryPostProcessor.class));</div><div class="line">	&#125;</div><div class="line">	invokeBeanFactoryPostProcessors(nonOrderedPostProcessors, beanFactory);</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>上面主要的执行逻辑我都添加了中文注释方便大家理解。<br>总结一下改方法主要做的事情:</p>
+<ol>
+<li>先判断如果beanFactory是BeanDefinitionRegistry类型的话就添加对BeanDefinitionRegistryPostProcessor类型的调用,BeanDefinitionRegistryPostProcessor接口是BeanFactoryPostProcessor的子接口,BeanDefinitionRegistryPostProcessor的作用是方便我们可以手动注册bean交给spring来管理,可以通过扩展其唯一的方法(void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException;) 来注册bean到spring里，这个不是本次分析的重点后面再举例讲解。</li>
+<li>先对硬编码配置的BeanFactoryPostProcessor进行处理 如果是BeanDefinitionRegistryPostProcessor类型会进行postProcessBeanDefinitionRegistry调用和postProcessBeanFactory调用,如果不是则只进行postProcessBeanFactory调用。</li>
+<li>再对配置的BeanDefinitionRegistryPostProcessor进行处理(postProcessBeanDefinitionRegistry调用和postProcessBeanFactory调用)</li>
+<li>最后对配置BeanFactoryPostProcessor的进行处理会按  PriorityOrdered/Ordered/没有继承任何排序接口  三种进行优先级排序执行postProcessBeanFactory调用。**其中我们的PropertyPlaceholderConfigurer 实现了BeanFactoryPostProcessor和 PriorityOrdered,所以会在这一步执行调用<pre><code>invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);**
+</code></pre></li>
+</ol>
+<ul>
+<li><strong>    我们继续进行分析：</strong></li>
+</ul>
+<p>invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);</p>
+<p>会执行PropertyPlaceholderConfigurer父类PropertyResourceConfigurer中的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">	 * &#123;@linkplain #mergeProperties Merge&#125;, &#123;@linkplain #convertProperties convert&#125; and</div><div class="line">	 * &#123;@linkplain #processProperties process&#125; properties against the given bean factory.</div><div class="line">	 * @throws BeanInitializationException if any properties cannot be loaded</div><div class="line">	 */</div><div class="line">	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException &#123;</div><div class="line">		try &#123;</div><div class="line">			Properties mergedProps = mergeProperties();</div><div class="line"></div><div class="line">			// Convert the merged properties, if necessary.</div><div class="line">			convertProperties(mergedProps);</div><div class="line"></div><div class="line">			// Let the subclass process the properties.</div><div class="line">			processProperties(beanFactory, mergedProps);</div><div class="line">		&#125;</div><div class="line">		catch (IOException ex) &#123;</div><div class="line">			throw new BeanInitializationException(&quot;Could not load properties&quot;, ex);</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>mergeProperties()方法会先将 <property name="location" value="classpath:bean.properties"></property> 配置的properties加载到mergedProps里<br>后面调用<strong>    processProperties(beanFactory, mergedProps)</strong>;进行处理</p>
+<ul>
+<li>processProperties(beanFactory, mergedProps)分析</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess, Properties props)</div><div class="line">			throws BeansException &#123;</div><div class="line"></div><div class="line">		StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(props);</div><div class="line"></div><div class="line">		this.doProcessProperties(beanFactoryToProcess, valueResolver);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>这里只有两行代码,第一行是创建StringValueResolver实例(用于替换占位符的真正方法)<br>    我们跨过千山万水终于要到马上要进行占位符替换了，继续分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,</div><div class="line">			StringValueResolver valueResolver) &#123;</div><div class="line">       </div><div class="line">        </div><div class="line">        //将创建的valueResolver设置到BeanDefinitionVisitor里 用于最终替换逻辑 (替换占位符为对应properties里配置的值)</div><div class="line">		BeanDefinitionVisitor visitor = new BeanDefinitionVisitor(valueResolver);</div><div class="line">        //拿出ioc容器里注册的beans</div><div class="line">		String[] beanNames = beanFactoryToProcess.getBeanDefinitionNames();</div><div class="line">		for (String curName : beanNames) &#123;</div><div class="line">			</div><div class="line">			//排除掉当前beanName也就是 PropertyPlaceholderConfigurer Bean 且beanFactoryToProcess必须是当前容器</div><div class="line">			if (!(curName.equals(this.beanName) &amp;&amp; beanFactoryToProcess.equals(this.beanFactory))) &#123;</div><div class="line">			    //获取一个bean对应的bean定义</div><div class="line">				BeanDefinition bd = beanFactoryToProcess.getBeanDefinition(curName);</div><div class="line">				try &#123;</div><div class="line">				    //进行bean定义元数据的替换操作</div><div class="line">					visitor.visitBeanDefinition(bd);</div><div class="line">				&#125;</div><div class="line">				catch (Exception ex) &#123;</div><div class="line">					throw new BeanDefinitionStoreException(bd.getResourceDescription(), curName, ex.getMessage());</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		// New in Spring 2.5: resolve placeholders in alias target names and aliases as well.</div><div class="line">		beanFactoryToProcess.resolveAliases(valueResolver);</div><div class="line"></div><div class="line">		// New in Spring 3.0: resolve placeholders in embedded values such as annotation attributes.</div><div class="line">		beanFactoryToProcess.addEmbeddedValueResolver(valueResolver);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>上面我已经使用中文注释写的很清楚了接着进行分析</p>
+<ul>
+<li>visitor.visitBeanDefinition(bd);</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public void visitBeanDefinition(BeanDefinition beanDefinition) &#123;</div><div class="line">		visitParentName(beanDefinition);</div><div class="line">		visitBeanClassName(beanDefinition);</div><div class="line">		visitFactoryBeanName(beanDefinition);</div><div class="line">		visitFactoryMethodName(beanDefinition);</div><div class="line">		visitScope(beanDefinition);</div><div class="line">		visitPropertyValues(beanDefinition.getPropertyValues());</div><div class="line">		ConstructorArgumentValues cas = beanDefinition.getConstructorArgumentValues();</div><div class="line">		visitIndexedArgumentValues(cas.getIndexedArgumentValues());</div><div class="line">		visitGenericArgumentValues(cas.getGenericArgumentValues());</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>这里可以对应 bean的parentName beanClassName property等进行替换操作我们这里只关注属性的替换操作</p>
+<ul>
+<li>visitPropertyValues(beanDefinition.getPropertyValues());</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">protected void visitPropertyValues(MutablePropertyValues pvs) &#123;</div><div class="line">		PropertyValue[] pvArray = pvs.getPropertyValues();</div><div class="line">		for (PropertyValue pv : pvArray) &#123;</div><div class="line">			Object newVal = resolveValue(pv.getValue());</div><div class="line">			if (!ObjectUtils.nullSafeEquals(newVal, pv.getValue())) &#123;</div><div class="line">				pvs.add(pv.getName(), newVal);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>Object newVal = resolveValue(pv.getValue());</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;rawtypes&quot;)</div><div class="line">	protected Object resolveValue(Object value) &#123;</div><div class="line">		if (value instanceof BeanDefinition) &#123;</div><div class="line">			visitBeanDefinition((BeanDefinition) value);</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof BeanDefinitionHolder) &#123;</div><div class="line">			visitBeanDefinition(((BeanDefinitionHolder) value).getBeanDefinition());</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof RuntimeBeanReference) &#123;</div><div class="line">			RuntimeBeanReference ref = (RuntimeBeanReference) value;</div><div class="line">			String newBeanName = resolveStringValue(ref.getBeanName());</div><div class="line">			if (!newBeanName.equals(ref.getBeanName())) &#123;</div><div class="line">				return new RuntimeBeanReference(newBeanName);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof RuntimeBeanNameReference) &#123;</div><div class="line">			RuntimeBeanNameReference ref = (RuntimeBeanNameReference) value;</div><div class="line">			String newBeanName = resolveStringValue(ref.getBeanName());</div><div class="line">			if (!newBeanName.equals(ref.getBeanName())) &#123;</div><div class="line">				return new RuntimeBeanNameReference(newBeanName);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof Object[]) &#123;</div><div class="line">			visitArray((Object[]) value);</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof List) &#123;</div><div class="line">			visitList((List) value);</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof Set) &#123;</div><div class="line">			visitSet((Set) value);</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof Map) &#123;</div><div class="line">			visitMap((Map) value);</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof TypedStringValue) &#123;</div><div class="line">			TypedStringValue typedStringValue = (TypedStringValue) value;</div><div class="line">			String stringValue = typedStringValue.getValue();</div><div class="line">			if (stringValue != null) &#123;</div><div class="line">				String visitedString = resolveStringValue(stringValue);</div><div class="line">				typedStringValue.setValue(visitedString);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		else if (value instanceof String) &#123;</div><div class="line">			return resolveStringValue((String) value);</div><div class="line">		&#125;</div><div class="line">		return value;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>这里有很多类型,是因为spring支持很多类型的配置比如property的值我们可以配置为ref=xxxbean那么value就是RuntimeBeanReference类型,<br>如果配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> &lt;list&gt;</div><div class="line">    &lt;value&gt;343&lt;/value&gt;</div><div class="line">    &lt;value&gt;45&lt;/value&gt;</div><div class="line">&lt;/list&gt;</div></pre></td></tr></table></figure></p>
+<p>那么value就是List类型等等。这里我们例子中配置的类型是TypedStringValue，那么执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">else if (value instanceof TypedStringValue) &#123;</div><div class="line">		TypedStringValue typedStringValue = (TypedStringValue) value;</div><div class="line">		//这里拿到的值是原始的带有占位符的比如例子里就是$&#123;student.name&#125;、$&#123;student.age&#125;这种</div><div class="line">		String stringValue = typedStringValue.getValue();</div><div class="line">		if (stringValue != null) &#123;</div><div class="line">		    //这一步就是去进行替换</div><div class="line">			String visitedString = resolveStringValue(stringValue);</div><div class="line">			typedStringValue.setValue(visitedString);</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>String visitedString = resolveStringValue(stringValue);</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">	 * Resolve the given String value, for example parsing placeholders.</div><div class="line">	 * @param strVal the original String value</div><div class="line">	 * @return the resolved String value</div><div class="line">	 */</div><div class="line">	protected String resolveStringValue(String strVal) &#123;</div><div class="line">		if (this.valueResolver == null) &#123;</div><div class="line">			throw new IllegalStateException(&quot;No StringValueResolver specified - pass a resolver &quot; +</div><div class="line">					&quot;object into the constructor or override the &apos;resolveStringValue&apos; method&quot;);</div><div class="line">		&#125;</div><div class="line">		//调用我们之前传进来的valueResolver也就是上面</div><div class="line">		//(BeanDefinitionVisitor visitor = new BeanDefinitionVisitor(valueResolver); 这里传进来的) 进行替换操作</div><div class="line">		String resolvedValue = this.valueResolver.resolveStringValue(strVal);</div><div class="line">		// Return original String if not modified.</div><div class="line">		return (strVal.equals(resolvedValue) ? strVal : resolvedValue);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>valueResolver其实就是PlaceholderResolvingStringValueResolver实例,它又委托PropertyPlaceholderHelper进行操作</p>
+<p>也就是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">	 * Replaces all placeholders of format &#123;@code $&#123;name&#125;&#125; with the value returned</div><div class="line">	 * from the supplied &#123;@link PlaceholderResolver&#125;.</div><div class="line">	 * @param value the value containing the placeholders to be replaced.</div><div class="line">	 * @param placeholderResolver the &#123;@code PlaceholderResolver&#125; to use for replacement.</div><div class="line">	 * @return the supplied value with placeholders replaced inline.</div><div class="line">	 */</div><div class="line">	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) &#123;</div><div class="line">		Assert.notNull(value, &quot;Argument &apos;value&apos; must not be null.&quot;);</div><div class="line">		return parseStringValue(value, placeholderResolver, new HashSet&lt;String&gt;());</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	protected String parseStringValue(</div><div class="line">			String strVal, PlaceholderResolver placeholderResolver, Set&lt;String&gt; visitedPlaceholders) &#123;</div><div class="line"></div><div class="line">		StringBuilder buf = new StringBuilder(strVal);</div><div class="line"></div><div class="line">		int startIndex = strVal.indexOf(this.placeholderPrefix);</div><div class="line">		while (startIndex != -1) &#123;</div><div class="line">			int endIndex = findPlaceholderEndIndex(buf, startIndex);</div><div class="line">			if (endIndex != -1) &#123;</div><div class="line">			    //将ex. $&#123;student.name&#125; 转成 student.name</div><div class="line">				String placeholder = buf.substring(startIndex + this.placeholderPrefix.length(), endIndex);</div><div class="line">				String originalPlaceholder = placeholder;</div><div class="line">				if (!visitedPlaceholders.add(originalPlaceholder)) &#123;</div><div class="line">					throw new IllegalArgumentException(</div><div class="line">							&quot;Circular placeholder reference &apos;&quot; + originalPlaceholder + &quot;&apos; in property definitions&quot;);</div><div class="line">				&#125;</div><div class="line">				// 递归调用直到没有占位符</div><div class="line">				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);</div><div class="line">				// 获取properties配置文件对应的值  就是获取student.name 对应在 properties里的值</div><div class="line">				String propVal = placeholderResolver.resolvePlaceholder(placeholder);</div><div class="line">				if (propVal == null &amp;&amp; this.valueSeparator != null) &#123;</div><div class="line">					int separatorIndex = placeholder.indexOf(this.valueSeparator);</div><div class="line">					if (separatorIndex != -1) &#123;</div><div class="line">						String actualPlaceholder = placeholder.substring(0, separatorIndex);</div><div class="line">						String defaultValue = placeholder.substring(separatorIndex + this.valueSeparator.length());</div><div class="line">						propVal = placeholderResolver.resolvePlaceholder(actualPlaceholder);</div><div class="line">						if (propVal == null) &#123;</div><div class="line">							propVal = defaultValue;</div><div class="line">						&#125;</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">				if (propVal != null) &#123;</div><div class="line">				    //再次递归调用 确保最后的值没有占位符</div><div class="line">					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);</div><div class="line">					//将原先的StringBuff的原始值替换为拿到的值</div><div class="line">					buf.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);</div><div class="line">					if (logger.isTraceEnabled()) &#123;</div><div class="line">						logger.trace(&quot;Resolved placeholder &apos;&quot; + placeholder + &quot;&apos;&quot;);</div><div class="line">					&#125;</div><div class="line">					//这里因为已经替换成真正的值 拿不到占位符($&#123;)所以值就是-1 会跳出循环返回</div><div class="line">					startIndex = buf.indexOf(this.placeholderPrefix, startIndex + propVal.length());</div><div class="line">				&#125;</div><div class="line">				else if (this.ignoreUnresolvablePlaceholders) &#123;</div><div class="line">					// Proceed with unprocessed value.</div><div class="line">					startIndex = buf.indexOf(this.placeholderPrefix, endIndex + this.placeholderSuffix.length());</div><div class="line">				&#125;</div><div class="line">				else &#123;</div><div class="line">					throw new IllegalArgumentException(&quot;Could not resolve placeholder &apos;&quot; +</div><div class="line">							placeholder + &quot;&apos;&quot; + &quot; in string value \&quot;&quot; + strVal + &quot;\&quot;&quot;);</div><div class="line">				&#125;</div><div class="line">				visitedPlaceholders.remove(originalPlaceholder);</div><div class="line">			&#125;</div><div class="line">			else &#123;</div><div class="line">				startIndex = -1;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		return buf.toString();</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>该方法是真正替换的操作所在,改方法已经添加中文注释应该很好理解了，总结就是做了一下两件事:<br>1.首先会将ex. ${student.name} 转成 student.name<br>2.将student.name通过 tring propVal = placeholderResolver.resolvePlaceholder(placeholder);获取真正的值然后返回。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) &#123;</div><div class="line">		String propVal = null;</div><div class="line">		if (systemPropertiesMode == SYSTEM_PROPERTIES_MODE_OVERRIDE) &#123;</div><div class="line">			propVal = resolveSystemProperty(placeholder);</div><div class="line">		&#125;</div><div class="line">		if (propVal == null) &#123;</div><div class="line">			propVal = resolvePlaceholder(placeholder, props);</div><div class="line">		&#125;</div><div class="line">		if (propVal == null &amp;&amp; systemPropertiesMode == SYSTEM_PROPERTIES_MODE_FALLBACK) &#123;</div><div class="line">			propVal = resolveSystemProperty(placeholder);</div><div class="line">		&#125;</div><div class="line">		return propVal;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>该方法就比较简单了就是根据不同的模式做处理,systemPropertiesMode默认是SYSTEM_PROPERTIES_MODE_FALLBACK</p>
+<ol>
+<li>如果systemPropertiesMode = SYSTEM_PROPERTIES_MODE_OVERRIDE 是指 系统配置文件优先级大于我们的配置文件。</li>
+<li>拿不到或者配置不等于SYSTEM_PROPERTIES_MODE_OVERRIDE 就去我们配置文件里进行获取</li>
+<li>如果还获取不到且如果systemPropertiesMode=SYSTEM_PROPERTIES_MODE_FALLBACK就再尝试去系统文件里查找。</li>
+</ol>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>经过以上各个步骤最终BeanDefinition里的parentName beanClassName property中的占位符都会被我们propertis配置文件中对应的值所替换掉，这就为后续实例化bean后做bean实例属性填充时做好了准备。<br>我们再进行  Student student =(Student) ac.getBean(“student”); 时就可以正常打印对应的值了。</p>
+<h2 id="看源码的一点分享tip"><a href="#看源码的一点分享tip" class="headerlink" title="看源码的一点分享tip"></a>看源码的一点分享tip</h2><ul>
+<li>看源码可能会比较枯燥,坚持很重要,如果看一遍是懵的那就是歇一歇再继续多看几遍这样慢慢就会找到感觉</li>
+<li>看的过程中一定要写例子进行调试,然后再继续反复看慢慢就会明白其中的含义</li>
+<li>看源码可以看某一个核心类的继承图,以及javadoc。还可以尝试画出核心的时序图，这些都能对我们看懂源码起到事半功倍的作用。</li>
+</ul>
+<p>至此本篇源码分析就结束了,后续继续spring源码分析的文章。加油！！！</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/sprig源码分析/" rel="tag">#sprig源码分析</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/21/redis-generate-orderno.html" rel="next" title="采用redis生成唯一且随机的订单号">
+                <i class="fa fa-chevron-left"></i> 采用redis生成唯一且随机的订单号
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/timg.jpg"
+               alt="yalunwang" />
+          <p class="site-author-name" itemprop="name">yalunwang</p>
+          <p class="site-description motion-element" itemprop="description">不忘初心,方得始终。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">18</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yalunwang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/2074251525/profile" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://codingxiaxw.cn" title="codingxiaxw" target="_blank">codingxiaxw</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://oyjt.github.io" title="小道博客" target="_blank">小道博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.nginx.cn" title="nginx中文站" target="_blank">nginx中文站</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.weiweiyila.com" title="红萝卜" target="_blank">红萝卜</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://m.kuaidi100.com/" title="快递查询" target="_blank">快递查询</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#BeanFactoryPostProcessors"><span class="nav-number">1.</span> <span class="nav-text">BeanFactoryPostProcessors</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍"><span class="nav-number">1.1.</span> <span class="nav-text">介绍</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PropertyPlaceholderConfigurer"><span class="nav-number">2.</span> <span class="nav-text">PropertyPlaceholderConfigurer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单使用的例子"><span class="nav-number">2.1.</span> <span class="nav-text">简单使用的例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码分析"><span class="nav-number">2.2.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结论"><span class="nav-number">2.3.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#看源码的一点分享tip"><span class="nav-number">3.</span> <span class="nav-text">看源码的一点分享tip</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yalunwang</span>
+  <a href="http://www.beian.miit.gov.cn">豫ICP备15019260号</a> 
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("M8iRyzY6Gzg1kn55zz62JYez-gzGzoHsz", "anAs9AkMkBJvGPfgI8LhM3lz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>
