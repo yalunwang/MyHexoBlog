@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next pisces use-motion">
+<html class="theme-next mist use-motion">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -117,7 +117,7 @@
 <script type="text/javascript" id="hexo.configuration">
   var NexT = window.NexT || {};
   var CONFIG = {
-    scheme: 'Pisces',
+    scheme: 'Mist',
     sidebar: {"position":"left","display":"post"},
     fancybox: true,
     motion: true,
@@ -249,6 +249,114 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2020/02/28/spring-BeanFactoryPostProcessors-PropertyPlaceholderConfigurer.html" itemprop="url">
+                  Spring源码分析-BeanFactoryPostProcessors 应用之 PropertyPlaceholderConfigurer
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-02-28T14:04:41+08:00" content="2020-02-28">
+              2020-02-28
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2020/02/28/spring-BeanFactoryPostProcessors-PropertyPlaceholderConfigurer.html" class="leancloud_visitors" data-flag-title="Spring源码分析-BeanFactoryPostProcessors 应用之 PropertyPlaceholderConfigurer">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="BeanFactoryPostProcessors"><a href="#BeanFactoryPostProcessors" class="headerlink" title="BeanFactoryPostProcessors"></a>BeanFactoryPostProcessors</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>BeanFactoryPostProcessors完整定义:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Allows for custom modification of an application context&apos;s bean definitions,</div><div class="line"> * adapting the bean property values of the context&apos;s underlying bean factory.</div><div class="line"> * @see BeanPostProcessor</div><div class="line"> * @see PropertyResourceConfigurer</div><div class="line"> */</div><div class="line">public interface BeanFactoryPostProcessor &#123;</div><div class="line"></div><div class="line">	/**</div><div class="line">	 * Modify the application context&apos;s internal bean factory after its standard</div><div class="line">	 * initialization. All bean definitions will have been loaded, but no beans</div><div class="line">	 * will have been instantiated yet. This allows for overriding or adding</div><div class="line">	 * properties even to eager-initializing beans.</div><div class="line">	 * @param beanFactory the bean factory used by the application context</div><div class="line">	 * @throws org.springframework.beans.BeansException in case of errors</div><div class="line">	 */</div><div class="line">	void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们知道spring最大优点就是其可扩展性,BeanFactoryPostProcessor接口就是spring中提供给我们用于扩展的一个地方。我们看该接口上的javadoc其实非常的详细,这也是我们看spring源码的一个技巧，就是看一个类是干嘛的一定要先通读其注释。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">结合接口上的注释大致描述下BeanFactoryPostProcessor：</div><div class="line">允许用户通过修改applicationContext 中的bean定义(就是xml中定义的bean的信息即:BeanDefinition是和xml有一对一的配置，比如是否是单利，以及propert 属性的赋值等)</div><div class="line">来调整applicationContext中bean工厂中bean属性值。</div><div class="line"></div><div class="line">也就是说执行到BeanFactoryPostProcessor时全部的BeanDefinition定义已经加载好了但是bean实例还没有被创建,我们可以修补或者覆盖bean属性值。</div></pre></td></tr></table></figure>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2020/02/28/spring-BeanFactoryPostProcessors-PropertyPlaceholderConfigurer.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
     
       
 
@@ -713,115 +821,6 @@
             
               
                 
-                <a class="post-title-link" href="/2017/10/17/jdbc_two.html" itemprop="url">
-                  jdbc使用二
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-10-17T22:24:27+08:00" content="2017-10-17">
-              2017-10-17
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-             <span id="/2017/10/17/jdbc_two.html" class="leancloud_visitors" data-flag-title="jdbc使用二">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="数据库连接池"><a href="#数据库连接池" class="headerlink" title="数据库连接池"></a>数据库连接池</h2><ol>
-<li>第一篇我们讲了JDBC的入门,我们每次访问数据库都要获取数据库连接，而数据库的连接的打开和关闭都会耗费很大的性能，所以为了解决这个问题出现了数据库连接池。</li>
-<li>数据库连接池在初始化时将创建一定数量的数据库连接放到连接池中, 这些数据库连接的数量是由最小数据库连接数来设定的.无论这些数据库连接是否被使用,连接池都将一直保证至少拥有这么多的连接数量.连接池的最大数据库连接数量限定了这个连接池能占有的最大连接数,当应用程序向连接池请求的连接数超过最大连接数量时,这些请求将被加入到等待队列中。</li>
-<li>连接池的最小和最大连接我们都可以通过开源的连接池框架提高的方法进行设置</li>
-<li>连接池内部都实现了 javax.sql.DataSrouce 接口<br>通过连接池获取的con关闭只是将连接还到连接池里
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2017/10/17/jdbc_two.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/2017/10/17/spring-wiring-bean.html" itemprop="url">
                   spring装配bean
                 </a>
@@ -883,6 +882,115 @@
 <p>这三个方案,选哪一个都是可以的,能用自动配置的就有自动配置,对于一些框架的配置我们不能修改别人的源码,必要的xml显示配置也是必要的,而且我们也可以三个方案同时使用,一些Bean自动装配,一些Bean Java配置,一些Bean xml配置。<br>对于显示配置，多少有些不方便还是自动装配最简便，所以我们先讲第一个自动化配置<br>
           <div class="post-more-link text-center">
             <a class="btn" href="/2017/10/17/spring-wiring-bean.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/10/17/jdbc_two.html" itemprop="url">
+                  jdbc使用二
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-17T22:24:27+08:00" content="2017-10-17">
+              2017-10-17
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2017/10/17/jdbc_two.html" class="leancloud_visitors" data-flag-title="jdbc使用二">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="数据库连接池"><a href="#数据库连接池" class="headerlink" title="数据库连接池"></a>数据库连接池</h2><ol>
+<li>第一篇我们讲了JDBC的入门,我们每次访问数据库都要获取数据库连接，而数据库的连接的打开和关闭都会耗费很大的性能，所以为了解决这个问题出现了数据库连接池。</li>
+<li>数据库连接池在初始化时将创建一定数量的数据库连接放到连接池中, 这些数据库连接的数量是由最小数据库连接数来设定的.无论这些数据库连接是否被使用,连接池都将一直保证至少拥有这么多的连接数量.连接池的最大数据库连接数量限定了这个连接池能占有的最大连接数,当应用程序向连接池请求的连接数超过最大连接数量时,这些请求将被加入到等待队列中。</li>
+<li>连接池的最小和最大连接我们都可以通过开源的连接池框架提高的方法进行设置</li>
+<li>连接池内部都实现了 javax.sql.DataSrouce 接口<br>通过连接池获取的con关闭只是将连接还到连接池里
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/10/17/jdbc_two.html#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1241,113 +1349,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/02/12/centos-insatall-nginx.html" itemprop="url">
-                  centos搭建nginx
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-02-12T12:08:54+08:00" content="2017-02-12">
-              2017-02-12
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-             <span id="/2017/02/12/centos-insatall-nginx.html" class="leancloud_visitors" data-flag-title="centos搭建nginx">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="Centos-安装Nginx"><a href="#Centos-安装Nginx" class="headerlink" title="Centos 安装Nginx"></a>Centos 安装Nginx</h2><ol>
-<li>添加Nginx到YUM源<br><code>sudo rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</code></li>
-<li>装Nginx<br><code>sudo yum install -y nginx</code>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2017/02/12/centos-insatall-nginx.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1393,7 +1394,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">17</span>
+              <span class="site-state-item-count">18</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1403,7 +1404,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1490,7 +1491,7 @@
         <div class="copyright" >
   
   &copy;  2016 - 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -1505,7 +1506,7 @@
 <div class="theme-info">
   主题 -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Pisces
+    NexT.Mist
   </a>
 </div>
 
@@ -1570,13 +1571,6 @@
 
   
   
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
-
-
 
   
 
